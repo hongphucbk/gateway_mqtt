@@ -79,6 +79,9 @@ async function readFilesFromFlexy(){
       	let ip = arrInfo[1];
       	let tagname = arrInfo[2];
 
+      	let OPCUAstatus = await writeAckOPCUA(site_id, tagname, ip);
+      	console.log('OPCUAstatus ', site_id,' ', OPCUAstatus)
+
       	await fs.createReadStream(currentPath)
 							  .pipe(csv({separator:';'}))
 							  .on('data', (data_row) => {
@@ -111,8 +114,7 @@ async function readFilesFromFlexy(){
 							    console.log('CSV ' + arrInfo[0] + 'file successfully processed');
 							    //fs.copyFileSync(currentPath, processedPath);
       						//fs.unlinkSync(currentPath)
-      						let OPCUAstatus = await writeAckOPCUA(site_id, tagname, ip);
-      						console.log('OPCUAstatus ', site_id,' ', OPCUAstatus)
+      						
 							  });
       }
       await console.log('----end of file----', new Date())
