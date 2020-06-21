@@ -23,7 +23,8 @@ const opcua = require("node-opcua");
 
 require('events').EventEmitter.defaultMaxListeners = 200;
 
-const strSQLTableName = process.env.SQL_TABLE_NAME; 
+const strSQLTableName = process.env.SQL_TABLE_NAME;
+const isMoveFile = parseInt(process.env.IS_MOVE_FILE)
 //*******************************************
 //joining path of directory
 
@@ -87,7 +88,7 @@ async function readFilesFromFlexy(){
       	fs.createReadStream(currentPath)
 							  .pipe(csv({separator:';'}))
 							  .on('data', (data_row) => {
-							  	console.log('-----------------------------------')
+							  	//console.log('-----------------------------------')
 							  	// if (typeof(data_row) == 'Object') {
 							  	// 	console.log('object.....')
 							  	// }
@@ -114,14 +115,15 @@ async function readFilesFromFlexy(){
 							  	console.log('Saved SQL status - ', arrInfo[0],' ', sts)
 							  	await exportToCSVFile(site_id, tagname, arrExportData)							  	
 							    console.log('CSV ' + arrInfo[0] + 'file successfully processed');
-							    //fs.copyFileSync(currentPath, processedPath);
-      						//fs.unlinkSync(currentPath)
+							    if (isMoveFile) {
+							    	fs.copyFileSync(currentPath, processedPath);
+      							fs.unlinkSync(currentPath)
+							    }  
       						
 							  });
 				// await console.log('----end of file----', new Date())
-	      let OPCUAstatus = await writeAckOPCUA(site_id, tagname, ip);
+	      let OPCUAstatus = await writeAckOPCUA(site_id, tagname, ip, port);
 	      console.log('OPCUAstatus ', site_id,' ', OPCUAstatus)
-
       }
       
       setTimeout(function(){}, 300);
@@ -130,7 +132,7 @@ async function readFilesFromFlexy(){
 }
 
 async function SaveDataToSQLServer(arrData){
-  console.log('data = ', arrData)
+  //console.log('data = ', arrData)
   let strDt = '';
   let current = moment(new Date()).format("YYYY-MM-DD HH:mm:ss")
 
@@ -204,7 +206,7 @@ function deleteDataAfter10days(tableName){
       var request = new sql.Request();
       let before10days = moment().subtract(1, 'days');
       let beforeday = new Date(before10days)
-      console.log('data', beforeday)
+      //console.log('data', beforeday)
       request.input('beforeday', sql.DateTimeOffset, beforeday);
 
       request.query('DELETE FROM ' + tableName + ' WHERE created_at < @beforeday', function(err, recordsets) {  
@@ -217,14 +219,14 @@ function deleteDataAfter10days(tableName){
   })
 }
 
-async function writeAckOPCUA(site_id, tagname, ip){
+async function writeAckOPCUA(site_id, tagname, ip, port){
   try {
       const options = {
           endpoint_must_exist: false,
       };
 
       const client = OPCUAClient.create(options);
-      await client.connect('opc.tcp://' + ip +  ':4840');
+      client.connect('opc.tcp://' + ip +  ':' + port);
       const session = await client.createSession({userName: 'user1',password:'password1'});
         // step 3 : browse
       //const browseResult = await session.browse("RootFolder");
@@ -239,7 +241,7 @@ async function writeAckOPCUA(site_id, tagname, ip){
       // console.log(" value = " , dataValue2.toString());
 
       let nodeToWrite = {
-		    nodeId: "ns=1;s=ack", //+ tagname,
+		    nodeId: process.env.nodeid, //+ tagname,
 		    attributeId: AttributeIds.Value,
 		    value: {
 	        value: {
@@ -248,22 +250,23 @@ async function writeAckOPCUA(site_id, tagname, ip){
 	        }
 		    }
 			}
-			let res = await session.write(nodeToWrite);
+			let res = session.write(nodeToWrite);
 			//console.log(res);
       //await new Promise((resolve) => setTimeout(resolve, 1000000000));
       //await monitoredItemGroup.terminate();
       //await session.close();
       
-      await session.close();
-      await client.disconnect();
+      session.close();
+      client.disconnect();
       if (res._value == 0) {
       	return 1
+      	console.log("Done !");
       }
       
-      console.log("Done !");
+      
       //readOPCUA1();
   } catch (err) {
-      console.log("Error", err);
+      console.log("Error", err.message);
       return 0
   }
 };
