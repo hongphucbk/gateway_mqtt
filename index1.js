@@ -21,18 +21,20 @@ const  {
  } = require("node-opcua-client");
 const opcua = require("node-opcua");
 
+require('events').EventEmitter.defaultMaxListeners = 200;
+
 const strSQLTableName = process.env.SQL_TABLE_NAME; 
 //*******************************************
 //joining path of directory
 
 async function run(){
-	await setInterval(async function(){
-  	await readFilesFromFlexy();
+	setInterval(async function(){
+  	readFilesFromFlexy();
   	//await writeAckOPCUA()
   	console.log('====================================')
-  }, 10000);
+  }, 20000);
 
-  await setInterval(async function(){
+  setInterval(async function(){
   	deleteDataAfter10days(strSQLTableName)
   }, 5000);
 }
@@ -80,16 +82,15 @@ async function readFilesFromFlexy(){
       	let port = arrInfo[2];
       	let tagname = arrInfo[3];
 
-      	let OPCUAstatus = await writeAckOPCUA(site_id, tagname, ip);
-      	console.log('OPCUAstatus ', site_id,' ', OPCUAstatus)
+      	
 
-      	await fs.createReadStream(currentPath)
+      	fs.createReadStream(currentPath)
 							  .pipe(csv({separator:';'}))
 							  .on('data', (data_row) => {
-							  	console.log('-----------------------------------', typeof(data_row))
-							  	if (typeof(data_row) == 'Object') {
-							  		console.log('object.....')
-							  	}
+							  	console.log('-----------------------------------')
+							  	// if (typeof(data_row) == 'Object') {
+							  	// 	console.log('object.....')
+							  	// }
 							  	let jsonData = {
 							  		site_id : site_id,
 							  		ip: ip,
@@ -117,10 +118,13 @@ async function readFilesFromFlexy(){
       						//fs.unlinkSync(currentPath)
       						
 							  });
+				// await console.log('----end of file----', new Date())
+	      let OPCUAstatus = await writeAckOPCUA(site_id, tagname, ip);
+	      console.log('OPCUAstatus ', site_id,' ', OPCUAstatus)
+
       }
-      await console.log('----end of file----', new Date())
       
-      await setTimeout(function(){}, 300);
+      setTimeout(function(){}, 300);
 	  });
 	});
 }
@@ -255,7 +259,7 @@ async function writeAckOPCUA(site_id, tagname, ip){
       if (res._value == 0) {
       	return 1
       }
-      return 0;
+      
       console.log("Done !");
       //readOPCUA1();
   } catch (err) {
