@@ -80,7 +80,7 @@ async function readFilesFromFlexy(){
       }else{
       	let site_id = arrInfo[0];
       	let ip = arrInfo[1];
-      	let port = arrInfo[2];
+      	let port = parseInt(arrInfo[2]);
       	let tagname = arrInfo[3];
 
       	
@@ -225,8 +225,8 @@ async function writeAckOPCUA(site_id, tagname, ip, port){
           endpoint_must_exist: false,
       };
 
-      const client = OPCUAClient.create(options);
-      client.connect('opc.tcp://' + ip +  ':' + port);
+      const client = await OPCUAClient.create(options);
+      await client.connect('opc.tcp://' + ip +  ':' + port);
       const session = await client.createSession({userName: 'user1',password:'password1'});
         // step 3 : browse
       //const browseResult = await session.browse("RootFolder");
@@ -250,20 +250,18 @@ async function writeAckOPCUA(site_id, tagname, ip, port){
 	        }
 		    }
 			}
-			let res = session.write(nodeToWrite);
+			let res = await session.write(nodeToWrite);
 			//console.log(res);
       //await new Promise((resolve) => setTimeout(resolve, 1000000000));
       //await monitoredItemGroup.terminate();
       //await session.close();
       
-      session.close();
-      client.disconnect();
+      await session.close();
+      await client.disconnect();
       if (res._value == 0) {
       	return 1
       	console.log("Done !");
       }
-      
-      
       //readOPCUA1();
   } catch (err) {
       console.log("Error", err.message);
