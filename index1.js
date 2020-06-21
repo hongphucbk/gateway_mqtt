@@ -40,7 +40,7 @@ async function run(){
   	readFilesFromFlexy();
   	//await writeAckOPCUA()
   	console.log('====================================')
-  }, 20000);
+  }, 10000);
 
   setInterval(async function(){
   	deleteDataAfter10days(strSQLTableName)
@@ -59,8 +59,11 @@ async function readFilesFromFlexy(){
 	  if (err) {
 	    return console.log('Unable to scan directory: ' + err);
 	  } 
+	  let count = 0;
 	  //listing all files using forEach
 	  await files.forEach(async function (file) {
+	  	count = count +1;
+	  	if (count < 10) {
 	  	let arrData = []
 	  	let arrExportData = [
         {
@@ -141,7 +144,7 @@ async function readFilesFromFlexy(){
 	      await delay(100);
       }
       
-      
+      } //End if count
 	  });
 	});
 }
