@@ -120,6 +120,11 @@ async function readFilesFromFlexy(){
 							  .on('end', async function(){
 							  	let sts = await SaveDataToSQLServer(arrData)
 							  	console.log('Saved SQL status - ', arrInfo[0],' ', sts)
+							  	if (sts == 0) {
+							    	fs.copyFileSync(currentPath, errPath);
+      							fs.unlinkSync(currentPath)
+      							await delay(100);
+							    }  
 							  	await exportToCSVFile(site_id, tagname, arrExportData)							  	
 							    console.log('CSV ' + arrInfo[0] + 'file successfully processed');
 							    if (isMoveFile) {
@@ -274,7 +279,7 @@ async function writeAckOPCUA(site_id, tagname, ip, port){
       }
       //readOPCUA1();
   } catch (err) {
-      console.log("Error", err.message);
+      console.log("OPC UA Error ", err.message);
       return 0
   }
 };
