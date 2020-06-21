@@ -124,13 +124,15 @@ async function readFilesFromFlexy(){
 							    	fs.copyFileSync(currentPath, errPath);
       							fs.unlinkSync(currentPath)
       							await delay(100);
-							    }  
-							  	await exportToCSVFile(site_id, tagname, arrExportData)							  	
-							    console.log('CSV ' + arrInfo[0] + 'file successfully processed');
-							    if (isMoveFile) {
-							    	fs.copyFileSync(currentPath, processedPath);
-      							fs.unlinkSync(currentPath)
-							    }  
+							    }else{
+							    	await exportToCSVFile(site_id, tagname, arrExportData)							  	
+								    console.log('CSV ' + arrInfo[0] + 'file successfully processed');
+								    if (isMoveFile) {
+								    	fs.copyFileSync(currentPath, processedPath);
+	      							fs.unlinkSync(currentPath)
+								    }
+							    }
+							  	  
       						
 							  });
 				// await console.log('----end of file----', new Date())
