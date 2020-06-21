@@ -68,7 +68,7 @@ async function readFilesFromFlexy(){
       let errPath = directoryPath + '\\Errors\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file;
       let processedPath = directoryPath + '\\Processed\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file;
       
-      if (arrInfo.length !== 4) {
+      if (arrInfo.length !== 5) {
       	console.log('Err! Data format in correct')
 
       	fs.copyFileSync(currentPath, errPath);
@@ -77,7 +77,8 @@ async function readFilesFromFlexy(){
       }else{
       	let site_id = arrInfo[0];
       	let ip = arrInfo[1];
-      	let tagname = arrInfo[2];
+      	let port = arrInfo[2];
+      	let tagname = arrInfo[3];
 
       	let OPCUAstatus = await writeAckOPCUA(site_id, tagname, ip);
       	console.log('OPCUAstatus ', site_id,' ', OPCUAstatus)
