@@ -1,0 +1,25 @@
+{
+  "name": "gatewayiot_pilot_phase2",
+  "version": "1.0.0",
+  "description": "Aucontech Gateway",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Phuc Truong",
+  "license": "ISC",
+  "dependencies": {
+    "csv-parser": "^2.3.3",
+    "dateformat": "^3.0.3",
+    "dotenv": "^8.2.0",
+    "export-to-csv": "^0.2.1",
+    "mkdirp": "^1.0.4",
+    "moment": "^2.26.0",
+    "mongoose": "^5.9.19",
+    "mssql": "^6.2.0",
+    "node-opcua": "^2.6.7",
+    "node-opcua-client": "^2.6.7",
+    "node-windows": "^1.0.0-beta.1",
+    "strip-bom-stream": "^4.0.0"
+  }
+}
