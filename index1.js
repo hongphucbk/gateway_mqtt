@@ -21,6 +21,13 @@ const  {
  } = require("node-opcua-client");
 const opcua = require("node-opcua");
 
+
+const delay = (amount = number) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, amount);
+  });
+}
+
 require('events').EventEmitter.defaultMaxListeners = 200;
 
 const strSQLTableName = process.env.SQL_TABLE_NAME;
@@ -124,12 +131,15 @@ async function readFilesFromFlexy(){
 				// await console.log('----end of file----', new Date())
 	      let OPCUAstatus = await writeAckOPCUA(site_id, tagname, ip, port);
 	      console.log('OPCUAstatus ', site_id,' ', OPCUAstatus)
+	      await delay(100);
       }
       
-      setTimeout(function(){}, 300);
+      
 	  });
 	});
 }
+
+
 
 async function SaveDataToSQLServer(arrData){
   //console.log('data = ', arrData)
