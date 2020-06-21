@@ -255,7 +255,7 @@ async function writeAckOPCUA(site_id, tagname, ip, port){
 		    attributeId: AttributeIds.Value,
 		    value: {
 	        value: {
-		        dataType: DataType.Double, 
+		        dataType: DataType.Float, 
 		        value: 1.0
 	        }
 		    }
