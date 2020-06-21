@@ -227,7 +227,7 @@ async function writeAckOPCUA(site_id, tagname, ip, port){
 
       const client = await OPCUAClient.create(options);
       await client.connect('opc.tcp://' + ip +  ':' + port);
-      const session = await client.createSession({userName: 'user1',password:'password1'});
+      const session = await client.createSession({userName: process.env.OPCUA_USERNAME,password:process.env.OPCUA_PASSWORD});
         // step 3 : browse
       //const browseResult = await session.browse("RootFolder");
   
@@ -241,7 +241,7 @@ async function writeAckOPCUA(site_id, tagname, ip, port){
       // console.log(" value = " , dataValue2.toString());
 
       let nodeToWrite = {
-		    nodeId: process.env.nodeid, //+ tagname,
+		    nodeId: process.env.OPCUA_NODEID, //+ tagname,
 		    attributeId: AttributeIds.Value,
 		    value: {
 	        value: {
