@@ -68,7 +68,7 @@ async function readFilesFromFlexy(){
       let errPath = directoryPath + '\\Errors\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file;
       let processedPath = directoryPath + '\\Processed\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file;
       
-      if (arrInfo.length !== 5) {
+      if (arrInfo.length !== 6) {
       	console.log('Err! Data format in correct')
 
       	fs.copyFileSync(currentPath, errPath);
