@@ -6,9 +6,21 @@ SQL_SERVER_PASSWORD=sa123
 SQL_SERVER_PORT=1433
 
 SQL_TABLE_NAME=Datalogger5
+SQL_TABLE_STATUS=DataloggerSts
 
 //Folder to Export
 CSV_EXPORT_PATH=C:\zPhuc\CSV
 CSV_BACKUP_PATH=C:\zPhuc\BACKUP
 
 CSV_FLEXY_PATH=C:\Backupdata
+
+//TIME
+
+PROCESS_TIME=10	//Second
+REMOVE_TIME=10	//Second
+PROCESSED_STORE=3 	//Days
+
+
+site_id;ip;port;username;password
+MY999952;127.0.0.1;4840;user1;password1
+VN110233;127.0.0.1;4841;user1;password1
