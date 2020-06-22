@@ -11,6 +11,7 @@ const ExportToCsv = require('export-to-csv').ExportToCsv;
 const mkdirp = require('mkdirp');
 //--------------------------------------------------------
 let strFullPath = process.env.CSV_FLEXY_PATH;
+let SQL_TABLE_STATUS = process.env.SQL_TABLE_STATUS
 let strTableName = process.env.SQL_TABLE_NAME
 
 const Inprogress = mkdirp.sync(strFullPath + '\\Inprogress');
@@ -27,9 +28,18 @@ let strQuery = 'CREATE TABLE ' + strTableName
 			 +'  flag float null,'
 			 +'  note VARCHAR(50) null'
 			 +')' 
-createDatabase(strTableName, strQuery)
+createDatabase(strQuery)
 
-async function createDatabase(table, strQuery){           
+
+let strQuery2 = 'CREATE TABLE ' + SQL_TABLE_STATUS
+			  +	'( id BIGINT IDENTITY PRIMARY KEY,'
+			  + '	site_id VARCHAR(60) NOT NULL,'
+			  + '	is_connect BIT,'
+			  + ' created_at DATETIME'
+				+ ');'
+createDatabase(strQuery2)
+
+async function createDatabase(strQuery){           
   try {
     let pool = await sql.connect(sqlConfig)
     let result1 = await pool.request()

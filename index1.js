@@ -11,6 +11,8 @@ const sqlConfig = require('./config/sql.js')
 const dateFormat = require('dateformat');
 const ExportToCsv = require('export-to-csv').ExportToCsv;
 const mkdirp = require('mkdirp');
+const rimraf = require("rimraf");
+
 const  { 
   OPCUAClient,
   resolveNodeId, 
@@ -31,20 +33,28 @@ const delay = (amount = number) => {
 require('events').EventEmitter.defaultMaxListeners = 200;
 
 const strSQLTableName = process.env.SQL_TABLE_NAME;
+const SQL_TABLE_STATUS = process.env.SQL_TABLE_STATUS;
+
 const isMoveFile = parseInt(process.env.IS_MOVE_FILE)
+const PROCESS_TIME = parseInt(process.env.PROCESS_TIME)*1000;
+const REMOVE_TIME = parseInt(process.env.REMOVE_TIME)*1000;
+const PROCESSED_STORE = parseInt(process.env.PROCESSED_STORE)*1000;
 //*******************************************
 //joining path of directory
 
 async function run(){
 	setInterval(async function(){
   	readFilesFromFlexy();
+    checkConnection()
   	//await writeAckOPCUA()
   	console.log('====================================')
-  }, 10000);
+  }, PROCESS_TIME);
 
   setInterval(async function(){
   	deleteDataAfter10days(strSQLTableName)
-  }, 5000);
+    deleteDataAfter10days(SQL_TABLE_STATUS)
+    deleteProcessedFolder(PROCESSED_STORE, process.env.CSV_FLEXY_PATH)
+  }, REMOVE_TIME);  
 }
 run();
 
@@ -79,7 +89,7 @@ async function readFilesFromFlexy(){
 
       let currentPath = inprogressFolder + '\\' + file;
       let errPath = directoryPath + '\\Errors\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file;
-      let processedPath = directoryPath + '\\Processed\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file;
+      let processedPath = directoryPath + '\\Processed\\';
       
       if (arrInfo.length !== 6) {
       	console.log('Err! Data format in correct')
@@ -122,34 +132,43 @@ async function readFilesFromFlexy(){
 							  })
 							  .on('end', async function(){
 							  	let sts = await SaveDataToSQLServer(arrData)
-							  	console.log('Saved SQL status - ', arrInfo[0],' ', sts)
+							  	console.log('Saved SQL status - ', site_id,' ', sts)
 							  	if (sts == 0) {
 							    	fs.copyFileSync(currentPath, errPath);
       							fs.unlinkSync(currentPath)
       							await delay(100);
 							    }else{
 							    	await exportToCSVFile(site_id, tagname, arrExportData)							  	
-								    console.log('CSV ' + arrInfo[0] + 'file successfully processed');
+								    console.log('CSV ' + site_id + 'file successfully processed');
 								    if (isMoveFile) {
-								    	fs.copyFileSync(currentPath, processedPath);
-	      							fs.unlinkSync(currentPath)
+								    	//let _strPath_Year = processedPath +'\\' + moment().format("YYYY")
+								    	//let _strPath_Month = _strPath_Year + '\\' + moment().format("YYYY_MM")
+										  let _strPath_Date = processedPath + '\\' + moment().format("YYYY_MM_DD")
+										 	let strPathFile = _strPath_Date + '\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file
+
+										  //const folderYear = mkdirp.sync(_strPath_Year);
+										  //const folderMonth = mkdirp.sync(_strPath_Month);
+										  const folderDate = mkdirp.sync(_strPath_Date);
+
+								    	fs.copyFileSync(currentPath, strPathFile);
+	      							//fs.unlinkSync(currentPath)
 								    }
+
+                    let OPCUAstatus = await writeAckOPCUA(site_id, tagname, ip, port);
+                    console.log('OPC UA status ', site_id,' ', ip + ':' + port ,' ' ,OPCUAstatus)
+                    await delay(100);
 							    }
 							  	  
       						
 							  });
 				// await console.log('----end of file----', new Date())
-	      let OPCUAstatus = await writeAckOPCUA(site_id, tagname, ip, port);
-	      console.log('OPCUAstatus ', site_id,' ', OPCUAstatus)
-	      await delay(100);
+	      
       }
       
       } //End if count
 	  });
 	});
 }
-
-
 
 async function SaveDataToSQLServer(arrData){
   //console.log('data = ', arrData)
@@ -288,3 +307,111 @@ async function writeAckOPCUA(site_id, tagname, ip, port){
       return 0
   }
 };
+
+function deleteProcessedFolder(days, path){
+  let beforeNdays = moment().subtract(days + 5, 'days');
+  let processedPath = path + '\\Processed';
+
+  let TempDate = beforeNdays
+  for(let i = 1; i <= 5; i++ ){
+    TempDate = moment(TempDate).add(1, 'd');
+    let folderName = moment(TempDate).format("YYYY_MM_DD")
+    let strFolderPath = processedPath + '\\' + folderName
+
+    if (fs.existsSync(strFolderPath)) {
+      rimraf.sync(strFolderPath);
+    }
+  }
+}
+
+
+function checkConnection(){
+  let arrAllSite = []
+  fs.createReadStream('./config/site_information.txt')
+    .pipe(csv({separator:';'}))
+    .on('data', (data) => {
+      arrAllSite.push(data)
+      // arrExportData.push(jsonExportData)
+    })
+    .on('end', async function(){
+      //console.log(arrAllSite)
+      arrAllSite.forEach(function(site){
+        readOPCUA(site.site_id, site.ip, site.port, site.username, site.password)
+      })
+    })
+}
+
+async function readOPCUA(site_id, ip, port, username, password){
+  try {
+    const options = {
+        endpoint_must_exist: false,
+    };
+    const client = OPCUAClient.create(options);
+
+    client.on("backoff", (retry, delay) => {
+        //console.log("Backoff ", retry, " next attempt in ", delay, "ms");
+        client.disconnect();
+    });
+
+    client.on("connection_lost", () => {
+      console.log("Connection lost");
+      saveConnectionStatus(site_id, 0)
+    });
+
+    client.on("connection_reestablished", () => {
+      //  console.log("Connection re-established");
+    });
+
+    client.on("connection_failed", () => {
+      // console.log("Connection failed");
+      // saveConnectionStatus(site_id, 0)
+    });
+    client.on("start_reconnection", () => {
+      //  console.log("Starting reconnection");
+      client.disconnect();
+    });
+
+    client.on("after_reconnection", (err) => {
+      //  console.log("After Reconnection event =>", err);
+    });
+
+    await client.connect('opc.tcp://' + ip +  ':' + port);
+    const session = await client.createSession({userName: username,password:password});
+    
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await session.close();
+    await client.disconnect();
+    console.log('Connect ' + ip + ':' + port + ' successfully');
+    saveConnectionStatus(site_id, 1)
+  } catch (err) {
+      console.log("Connect Error", err.message);
+      saveConnectionStatus(site_id, 0)
+  }
+}
+
+function saveConnectionStatus(site_id, is_connect){
+  // connect to your database
+  sql.connect(sqlConfig, function (err) {
+    if (err){
+      console.log(err);
+    } 
+    else
+    {
+      var request = new sql.Request();
+      request.input('site_id', sql.VarChar, site_id);
+      request.input('is_connect', sql.Bit, is_connect );
+      request.input('created_at', sql.DateTimeOffset, new Date());
+
+      let strQuery = 'INSERT INTO '+ process.env.SQL_TABLE_STATUS 
+                   + ' (site_id, is_connect, created_at) '
+                   + ' VALUES (@site_id, @is_connect, @created_at)'
+      request.query(strQuery, function(err, recordsets) {  
+        if (err) console.log(err); 
+        //console.log(recordsets)
+        //sql.close()
+      });
+   
+    }
+  })
+}
+
