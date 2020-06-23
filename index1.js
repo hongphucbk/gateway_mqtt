@@ -190,8 +190,8 @@ async function SaveDataToSQLServer(arrData){
     //console.log(result1)
     return 1;
 	} catch (err) {
-	   console.log("SQL Error " + err)
-	   return 0;
+    //console.log("SQL Error " + err)
+    return 0;
 	}
 }
 
