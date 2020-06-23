@@ -40,7 +40,6 @@ const PROCESS_TIME = parseInt(process.env.PROCESS_TIME)*1000;
 const REMOVE_TIME = parseInt(process.env.REMOVE_TIME)*1000;
 const PROCESSED_STORE = parseInt(process.env.PROCESSED_STORE)*1000;
 const CHECK_CONNECT_TIME = parseInt(process.env.CHECK_CONNECT_TIME)*1000;
-const BACKUP_SQL_DAY = parseInt(process.env.BACKUP_SQL_DAY);
 
 
 //*******************************************
@@ -245,7 +244,7 @@ function deleteDataAfter10days(tableName){
     else
     {
       var request = new sql.Request();
-      let before10days = moment().subtract(BACKUP_SQL_DAY, 'days');
+      let before10days = moment().subtract(1, 'days');
       let beforeday = new Date(before10days)
       //console.log('data', beforeday)
       request.input('beforeday', sql.DateTimeOffset, beforeday);
