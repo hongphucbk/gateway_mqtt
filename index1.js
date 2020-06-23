@@ -48,7 +48,7 @@ const CHECK_CONNECT_TIME = parseInt(process.env.CHECK_CONNECT_TIME)*1000;
 async function run(){
 	setInterval(async function(){
   	readFilesFromFlexy();
-    checkConnection()
+    //checkConnection()
   	//await writeAckOPCUA()
   	console.log('====================================')
   }, PROCESS_TIME);
@@ -425,11 +425,12 @@ function saveConnectionStatus(site_id, is_connect){
 
 
 async function writeConnectionToCSV(site_id, value){
-  let jsonConnectExportData = {
-    TimeStamp: moment().format("mm/dd/yyyy HH:MM"),
+  let jsonConnectExportData = [{
+    TimeStamp: dateFormat(new Date(), "mm/dd/yyyy HH:MM"),
     Tagname: site_id + ':METTUBE.'+ 'CONNECTION',
     Value: value,
-  }
-  await exportToCSVFile(site_id, tagname, jsonConnectExportData)
+  }]
+  //console.log(jsonConnectExportData)
+  await exportToCSVFile(site_id, 'CONNECTION', jsonConnectExportData)
   
 }

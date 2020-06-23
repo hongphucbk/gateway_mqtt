@@ -21,9 +21,10 @@ OPCUA_NODEID_NS=1
 
 //TIME
 
-PROCESS_TIME=10	//Second
-REMOVE_TIME=10	//Second
-PROCESSED_STORE=3 	//Days
+PROCESS_TIME=10			//Second
+REMOVE_TIME=10			//Second
+CHECK_CONNECT_TIME=30 	//Second
+PROCESSED_STORE=3 		//Days
 
 
 site_id;ip;port;username;password
