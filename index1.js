@@ -135,6 +135,9 @@ async function readFilesFromFlexy(){
               fs.copyFileSync(currentPath, errPath);
               fs.unlinkSync(currentPath)
             }else{
+              let OPCUAstatus = await writeAckOPCUA(site_id, ackTag, ip, port);
+              console.log('OPC UA status ', site_id,' ', ip + ':' + port ,' ' ,OPCUAstatus)
+              
               let sts = await SaveDataToSQLServer(arrData)
               console.log('Saved SQL status - ', site_id,' ', sts)
               await delay(50);
@@ -151,8 +154,7 @@ async function readFilesFromFlexy(){
                 fs.unlinkSync(currentPath)
               }
 
-              let OPCUAstatus = await writeAckOPCUA(site_id, ackTag, ip, port);
-              console.log('OPC UA status ', site_id,' ', ip + ':' + port ,' ' ,OPCUAstatus)
+              
               await delay(50);
             }			  	  
 						
