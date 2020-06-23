@@ -130,30 +130,31 @@ async function readFilesFromFlexy(){
 				  	arrExportData.push(jsonExportData)
 				  })
 				  .on('end', async function(){
-				  	let sts = await SaveDataToSQLServer(arrData)
-				  	console.log('Saved SQL status - ', site_id,' ', sts)
-				  	if (sts == 0) {
-				    	fs.copyFileSync(currentPath, errPath);
-							fs.unlinkSync(currentPath)
-							await delay(100);
-				    }else{
-				    	await exportToCSVFile(site_id, tagname, arrExportData)							  	
-					    console.log('CSV ' + site_id + 'file successfully processed');
-					    if (isMoveFile) {
-							  let _strPath_Date = processedPath + '\\' + moment().format("YYYY_MM_DD")
-							 	let strPathFile = _strPath_Date + '\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file
+            console.log(arrData)
+            if (arrData.length == 0) {
+              fs.copyFileSync(currentPath, errPath);
+              fs.unlinkSync(currentPath)
+            }else{
+              let sts = await SaveDataToSQLServer(arrData)
+              console.log('Saved SQL status - ', site_id,' ', sts)
+              await delay(50);
 
-							  const folderDate = mkdirp.sync(_strPath_Date);
+              await exportToCSVFile(site_id, tagname, arrExportData)                  
+              console.log('CSV ' + site_id + 'file successfully processed');
+              if (isMoveFile) {
+                let _strPath_Date = processedPath + '\\' + moment().format("YYYY_MM_DD")
+                let strPathFile = _strPath_Date + '\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file
 
-					    	fs.copyFileSync(currentPath, strPathFile);
-  							fs.unlinkSync(currentPath)
-					    }
+                const folderDate = mkdirp.sync(_strPath_Date);
+
+                fs.copyFileSync(currentPath, strPathFile);
+                // fs.unlinkSync(currentPath)
+              }
 
               let OPCUAstatus = await writeAckOPCUA(site_id, ackTag, ip, port);
               console.log('OPC UA status ', site_id,' ', ip + ':' + port ,' ' ,OPCUAstatus)
-              await delay(100);
-				    }
-				  	  
+              await delay(50);
+            }			  	  
 						
 				  });
 				// await console.log('----end of file----', new Date())
