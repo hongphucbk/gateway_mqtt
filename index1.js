@@ -39,6 +39,9 @@ const isMoveFile = parseInt(process.env.IS_MOVE_FILE)
 const PROCESS_TIME = parseInt(process.env.PROCESS_TIME)*1000;
 const REMOVE_TIME = parseInt(process.env.REMOVE_TIME)*1000;
 const PROCESSED_STORE = parseInt(process.env.PROCESSED_STORE)*1000;
+const CHECK_CONNECT_TIME = parseInt(process.env.CHECK_CONNECT_TIME)*1000;
+
+
 //*******************************************
 //joining path of directory
 
@@ -55,6 +58,10 @@ async function run(){
     deleteDataAfter10days(SQL_TABLE_STATUS)
     deleteProcessedFolder(PROCESSED_STORE, process.env.CSV_FLEXY_PATH)
   }, REMOVE_TIME);  
+
+  setInterval(async function(){
+    checkConnection()
+  }, CHECK_CONNECT_TIME);
 }
 run();
 
@@ -353,6 +360,7 @@ async function readOPCUA(site_id, ip, port, username, password){
     client.on("connection_lost", () => {
       console.log("Connection lost");
       saveConnectionStatus(site_id, 0)
+      writeConnectionToCSV(site_id, 0)
     });
 
     client.on("connection_reestablished", () => {
@@ -379,10 +387,13 @@ async function readOPCUA(site_id, ip, port, username, password){
     await session.close();
     await client.disconnect();
     console.log('Connect ' + ip + ':' + port + ' successfully');
+    writeConnectionToCSV(site_id, 1)
     saveConnectionStatus(site_id, 1)
   } catch (err) {
       console.log("Connect Error", err.message);
+      writeConnectionToCSV(site_id, 0)
       saveConnectionStatus(site_id, 0)
+
   }
 }
 
@@ -412,3 +423,13 @@ function saveConnectionStatus(site_id, is_connect){
   })
 }
 
+
+async function writeConnectionToCSV(site_id, value){
+  let jsonConnectExportData = {
+    TimeStamp: moment().format("mm/dd/yyyy HH:MM"),
+    Tagname: site_id + ':METTUBE.'+ 'CONNECTION',
+    Value: value,
+  }
+  await exportToCSVFile(site_id, tagname, jsonConnectExportData)
+  
+}
