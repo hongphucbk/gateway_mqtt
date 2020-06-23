@@ -158,20 +158,14 @@ async function readFilesFromFlexy(){
                 const folderDate = mkdirp.sync(_strPath_Date);
 
                 fs.copyFileSync(currentPath, strPathFile);
-                await delay(50);
                 fs.unlinkSync(currentPath)
                 await delay(50);
               }
-
-              
-              
-            }			  	  
-						
+            }			  	  				
 				  });
-				// await console.log('----end of file----', new Date())
-	      
+				// await console.log('----end of file----', new Date())  
+        await delay(50);
       }
-      
       } //End if count
 	  });
 	});
