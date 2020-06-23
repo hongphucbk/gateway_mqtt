@@ -91,7 +91,7 @@ async function readFilesFromFlexy(){
       let errPath = directoryPath + '\\Errors\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file;
       let processedPath = directoryPath + '\\Processed\\';
       
-      if (arrInfo.length !== 6) {
+      if (arrInfo.length !== 7) {
       	console.log('Err! Data format in correct')
 
       	fs.copyFileSync(currentPath, errPath);
@@ -102,65 +102,60 @@ async function readFilesFromFlexy(){
       	let ip = arrInfo[1];
       	let port = parseInt(arrInfo[2]);
       	let tagname = arrInfo[3];
-
-      	
+        let ackTag = arrInfo[4];
 
       	fs.createReadStream(currentPath)
-							  .pipe(csv({separator:';'}))
-							  .on('data', (data_row) => {
-							  	//console.log('-----------------------------------')
-							  	// if (typeof(data_row) == 'Object') {
-							  	// 	console.log('object.....')
-							  	// }
-							  	let jsonData = {
-							  		site_id : site_id,
-							  		ip: ip,
-							  		timestamp: moment(data_row.TimeStr, "DD/MM/YYYY HH:mm:ss", true), //(data_row.TimeStr),
-							  		tagname: tagname,
-							  		value: parseFloat(data_row.Value),
-							  		created_at: new Date(),
-							  	}
-							  	let strDatetime = dateFormat(jsonData.timestamp, "mm/dd/yyyy HH:MM");
-							  	let jsonExportData = {
-					          TimeStamp: strDatetime,
-					          Tagname: site_id + ':METTUBE.'+ tagname,
-					          Value: jsonData.value.toFixed(1),
-							  	}
+				  .pipe(csv({separator:';'}))
+				  .on('data', (data_row) => {
+				  	//console.log('-----------------------------------')
+				  	// if (typeof(data_row) == 'Object') {
+				  	// 	console.log('object.....')
+				  	// }
+				  	let jsonData = {
+				  		site_id : site_id,
+				  		ip: ip,
+				  		timestamp: moment(data_row.TimeStr, "DD/MM/YYYY HH:mm:ss", true), //(data_row.TimeStr),
+				  		tagname: tagname,
+				  		value: parseFloat(data_row.Value),
+				  		created_at: new Date(),
+				  	}
+				  	let strDatetime = dateFormat(jsonData.timestamp, "mm/dd/yyyy HH:MM");
+				  	let jsonExportData = {
+		          TimeStamp: strDatetime,
+		          Tagname: site_id + ':METTUBE.'+ tagname,
+		          Value: jsonData.value.toFixed(1),
+				  	}
 
-							  	arrData.push(jsonData)
-							  	arrExportData.push(jsonExportData)
-							  })
-							  .on('end', async function(){
-							  	let sts = await SaveDataToSQLServer(arrData)
-							  	console.log('Saved SQL status - ', site_id,' ', sts)
-							  	if (sts == 0) {
-							    	fs.copyFileSync(currentPath, errPath);
-      							fs.unlinkSync(currentPath)
-      							await delay(100);
-							    }else{
-							    	await exportToCSVFile(site_id, tagname, arrExportData)							  	
-								    console.log('CSV ' + site_id + 'file successfully processed');
-								    if (isMoveFile) {
-								    	//let _strPath_Year = processedPath +'\\' + moment().format("YYYY")
-								    	//let _strPath_Month = _strPath_Year + '\\' + moment().format("YYYY_MM")
-										  let _strPath_Date = processedPath + '\\' + moment().format("YYYY_MM_DD")
-										 	let strPathFile = _strPath_Date + '\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file
+				  	arrData.push(jsonData)
+				  	arrExportData.push(jsonExportData)
+				  })
+				  .on('end', async function(){
+				  	let sts = await SaveDataToSQLServer(arrData)
+				  	console.log('Saved SQL status - ', site_id,' ', sts)
+				  	if (sts == 0) {
+				    	fs.copyFileSync(currentPath, errPath);
+							fs.unlinkSync(currentPath)
+							await delay(100);
+				    }else{
+				    	await exportToCSVFile(site_id, tagname, arrExportData)							  	
+					    console.log('CSV ' + site_id + 'file successfully processed');
+					    if (isMoveFile) {
+							  let _strPath_Date = processedPath + '\\' + moment().format("YYYY_MM_DD")
+							 	let strPathFile = _strPath_Date + '\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file
 
-										  //const folderYear = mkdirp.sync(_strPath_Year);
-										  //const folderMonth = mkdirp.sync(_strPath_Month);
-										  const folderDate = mkdirp.sync(_strPath_Date);
+							  const folderDate = mkdirp.sync(_strPath_Date);
 
-								    	fs.copyFileSync(currentPath, strPathFile);
-	      							//fs.unlinkSync(currentPath)
-								    }
+					    	fs.copyFileSync(currentPath, strPathFile);
+  							//fs.unlinkSync(currentPath)
+					    }
 
-                    let OPCUAstatus = await writeAckOPCUA(site_id, tagname, ip, port);
-                    console.log('OPC UA status ', site_id,' ', ip + ':' + port ,' ' ,OPCUAstatus)
-                    await delay(100);
-							    }
-							  	  
-      						
-							  });
+              let OPCUAstatus = await writeAckOPCUA(site_id, ackTag, ip, port);
+              console.log('OPC UA status ', site_id,' ', ip + ':' + port ,' ' ,OPCUAstatus)
+              await delay(100);
+				    }
+				  	  
+						
+				  });
 				// await console.log('----end of file----', new Date())
 	      
       }
@@ -278,14 +273,14 @@ async function writeAckOPCUA(site_id, tagname, ip, port){
       // step 4 : read a variable with readVariableValue
       // const dataValue2 = await session.readVariableValue("ns=1;s=ack");
       // console.log(" value = " , dataValue2.toString());
-
+      let strNodeID = 'ns=' + process.env.OPCUA_NODEID_NS + ';s=ack_' + tagname;
       let nodeToWrite = {
-		    nodeId: process.env.OPCUA_NODEID, //+ tagname,
+		    nodeId: strNodeID, //+ tagname,
 		    attributeId: AttributeIds.Value,
 		    value: {
 	        value: {
-		        dataType: DataType.Float, 
-		        value: 1.0
+		        dataType: DataType.Boolean, 
+		        value: true
 	        }
 		    }
 			}
@@ -323,7 +318,6 @@ function deleteProcessedFolder(days, path){
     }
   }
 }
-
 
 function checkConnection(){
   let arrAllSite = []
