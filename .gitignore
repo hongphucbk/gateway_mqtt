@@ -1,4 +1,4 @@
 .env
 node_modules
 # index1.js
-site_information.txt
+config/site_information.txt
