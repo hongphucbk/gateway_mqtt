@@ -148,7 +148,7 @@ async function readFilesFromFlexy(){
                 const folderDate = mkdirp.sync(_strPath_Date);
 
                 fs.copyFileSync(currentPath, strPathFile);
-                // fs.unlinkSync(currentPath)
+                fs.unlinkSync(currentPath)
               }
 
               let OPCUAstatus = await writeAckOPCUA(site_id, ackTag, ip, port);
