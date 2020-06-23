@@ -80,7 +80,7 @@ async function readFilesFromFlexy(){
 	  //listing all files using forEach
 	  await files.forEach(async function (file) {
 	  	count = count +1;
-	  	if (count < 10) {
+	  	if (count < 20) {
 	  	let arrData = []
 	  	let arrExportData = [
         {
@@ -158,11 +158,13 @@ async function readFilesFromFlexy(){
                 const folderDate = mkdirp.sync(_strPath_Date);
 
                 fs.copyFileSync(currentPath, strPathFile);
+                await delay(50);
                 fs.unlinkSync(currentPath)
+                await delay(50);
               }
 
               
-              await delay(50);
+              
             }			  	  
 						
 				  });
