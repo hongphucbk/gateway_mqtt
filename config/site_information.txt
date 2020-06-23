@@ -1,3 +1,0 @@
-site_id;ip;port;username;password
-MY999952;124.158.10.133;4840;user1;password1
-VN110233;124.158.10.133;4841;user1;password1
