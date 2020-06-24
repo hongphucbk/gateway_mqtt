@@ -41,7 +41,8 @@ const REMOVE_TIME = parseInt(process.env.REMOVE_TIME)*1000;
 const PROCESSED_STORE = parseInt(process.env.PROCESSED_STORE)*1000;
 const CHECK_CONNECT_TIME = parseInt(process.env.CHECK_CONNECT_TIME)*1000;
 const BACKUP_SQL_DAY = parseInt(process.env.BACKUP_SQL_DAY);
-
+const directoryPath = process.env.CSV_FLEXY_PATH;
+const inprogressFolder = directoryPath + '\\Inprogress';
 
 //*******************************************
 //joining path of directory
@@ -68,11 +69,8 @@ run();
 
 
 async function readFilesFromFlexy(){
-	
-	const directoryPath = process.env.CSV_FLEXY_PATH;
 	//passsing directoryPath and callback function
-	let inprogressFolder = directoryPath + '\\Inprogress';
-	await fs.readdir(inprogressFolder, async function (err, files) {
+		await fs.readdir(inprogressFolder, async function (err, files) {
 	  //handling error
 	  if (err) {
 	    return console.log('Unable to scan directory: ' + err);
@@ -80,6 +78,8 @@ async function readFilesFromFlexy(){
 	  let count = 0;
 	  //listing all files using forEach
 	  await files.forEach(async function (file) {
+      console.log(file);
+      console.log('start------------> ' + new Date())
 	  	count = count +1;
 	  	if (count < 20) {
 	  	let arrData = []
@@ -91,9 +91,8 @@ async function readFilesFromFlexy(){
         }
       ]
       // Do whatever you want to do with the file
-      //console.log(file);
       let arrInfo = file.split("_")
-      console.log(file);
+      
 
       let currentPath = inprogressFolder + '\\' + file;
       let errPath = directoryPath + '\\Errors\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file;
@@ -142,6 +141,7 @@ async function readFilesFromFlexy(){
             if (arrData.length == 0) {
               fs.copyFileSync(currentPath, errPath);
               fs.unlinkSync(currentPath)
+              await delay(50);
             }else{
               let OPCUAstatus = await writeAckOPCUA(site_id, ackTag, ip, port);
               console.log('OPC UA status ', site_id,' ', ackTag + ':',' ' ,OPCUAstatus)
@@ -166,6 +166,7 @@ async function readFilesFromFlexy(){
 				  });
 				// await console.log('----end of file----', new Date())  
         await delay(50);
+        console.log('end------------> ' + new Date())
       }
       } //End if count
 	  });
