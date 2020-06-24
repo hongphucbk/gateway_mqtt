@@ -98,13 +98,12 @@ async function readFilesFromFlexy(){
       
       let processedPath = directoryPath + '\\Processed';
       let errPath = directoryPath + '\\Errors\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file;
-      
+
       if (arrInfo.length !== 7) {
       	console.log('Err! Data format in correct')
         
       	fs.copyFileSync(currentPath, errPath);
       	fs.unlinkSync(currentPath)
-        await delay(50);
       }else{
       	let site_id = arrInfo[0];
       	let ip = arrInfo[1];
@@ -142,7 +141,6 @@ async function readFilesFromFlexy(){
             if (arrData.length == 0) {
               fs.copyFileSync(currentPath, errPath);
               fs.unlinkSync(currentPath)
-              await delay(50);
             }else{
               let sts = await SaveDataToSQLServer(arrData)
               console.log('SQL', site_id,':',sts)
@@ -158,9 +156,7 @@ async function readFilesFromFlexy(){
 
                 fs.copyFileSync(currentPath, strPathFile);
                 fs.unlinkSync(currentPath)
-                await delay(50);
               }
-
               sendAckToFlexy(site_id, ackTag, ip, port);
             }			  	  				
 				  }) 
