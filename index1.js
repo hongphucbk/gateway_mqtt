@@ -76,10 +76,10 @@ async function readFilesFromFlexy(){
 	    return console.log('Unable to scan directory: ' + err);
 	  } 
 	  let count = 0;
+
+    console.log('Start-------> ' + new Date()) 
 	  //listing all files using forEach
 	  await files.forEach(async function (file) {
-      console.log(file);
-      console.log('start------------> ' + new Date())
 	  	count = count +1;
 	  	if (count < 20) {
 	  	let arrData = []
@@ -90,20 +90,20 @@ async function readFilesFromFlexy(){
           Value: 'Value',
         }
       ]
+      
       // Do whatever you want to do with the file
       let arrInfo = file.split("_")
-      
-
+      console.log('File name: ' +arrInfo.length + ' - ' + file);
       let currentPath = inprogressFolder + '\\' + file;
-      let errPath = directoryPath + '\\Errors\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file;
-      let processedPath = directoryPath + '\\Processed\\';
+      
+      let processedPath = directoryPath + '\\Processed';
       
       if (arrInfo.length !== 7) {
       	console.log('Err! Data format in correct')
-
+        let errPath = directoryPath + '\\Errors\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file;
       	fs.copyFileSync(currentPath, errPath);
       	fs.unlinkSync(currentPath)
-
+        await delay(50);
       }else{
       	let site_id = arrInfo[0];
       	let ip = arrInfo[1];
@@ -137,17 +137,14 @@ async function readFilesFromFlexy(){
 				  	arrExportData.push(jsonExportData)
 				  })
 				  .on('end', async function(){
-            console.log(arrData)
+            //console.log(arrData)
             if (arrData.length == 0) {
               fs.copyFileSync(currentPath, errPath);
               fs.unlinkSync(currentPath)
               await delay(50);
             }else{
-              let OPCUAstatus = await writeAckOPCUA(site_id, ackTag, ip, port);
-              console.log('OPC UA status ', site_id,' ', ackTag + ':',' ' ,OPCUAstatus)
-
               let sts = await SaveDataToSQLServer(arrData)
-              console.log('Saved SQL status - ', site_id,' ', sts)
+              console.log('Saved SQL - ', site_id,': ', sts)
               await delay(50);
 
               await exportToCSVFile(site_id, tagname, arrExportData)                  
@@ -162,14 +159,21 @@ async function readFilesFromFlexy(){
                 fs.unlinkSync(currentPath)
                 await delay(50);
               }
+
+              let OPCUAstatus = await writeAckOPCUA(site_id, ackTag, ip, port);
+              console.log('OPC UA ', site_id,' ', ackTag + ': ',OPCUAstatus)
             }			  	  				
-				  });
+				  })
+          .on('err', async function(){
+            console.log('Read stream error ', err.message)
+          })
 				// await console.log('----end of file----', new Date())  
         await delay(50);
-        console.log('end------------> ' + new Date())
+        
       }
       } //End if count
 	  });
+    
 	});
 }
 
