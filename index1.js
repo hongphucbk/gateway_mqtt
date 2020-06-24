@@ -45,14 +45,31 @@ const directoryPath = process.env.CSV_FLEXY_PATH;
 const inprogressFolder = directoryPath + '\\Inprogress';
 
 //*******************************************
-//joining path of directory
+// Global variable
 
+
+//*****************
+//joining path of directory
+let allSites = []
 async function run(){
+  fs.createReadStream('./config/site_information.txt')
+    .on('error', () => {
+      console.log('Stream file error')
+    })
+    .pipe(csv({separator:';'}))
+    .on('data', (data) => {
+      allSites.push(data)
+      // arrExportData.push(jsonExportData)
+    })
+    .on('end', async function(){
+      //console.log(allSites)
+    })
+
 	setInterval(async function(){
   	readFilesFromFlexy();
     //checkConnection()
   	//await writeAckOPCUA()
-  	console.log('====================================')
+  	console.log('================================================================================')
   }, PROCESS_TIME);
 
   setInterval(async function(){
@@ -67,124 +84,160 @@ async function run(){
 }
 run();
 
+const filterItems = (arr, query) => {
+  return arr.filter(el => el.toLowerCase().indexOf(query.toLowerCase()) !== -1)
+}
+
+
 
 async function readFilesFromFlexy(){
 	//passsing directoryPath and callback function
-		await fs.readdir(inprogressFolder, async function (err, files) {
+	await fs.readdir(inprogressFolder, async function (err, files) {
 	  //handling error
 	  if (err) {
 	    return console.log('Unable to scan directory: ' + err);
-	  } 
+	  }
 	  let count = 0;
-
-    console.log('Start-------> ' + moment(new Date()).format("YYYY-MM-DD-HH:mm:ss")) 
-	  //listing all files using forEach
-	  await files.forEach(async function (file) {
-	  	count = count +1;
-	  	if (count < 20) {
-	  	let arrData = []
-	  	let arrExportData = [
-        {
-          TimeStamp: 'TimeStamp',
-          Tagname: 'Tagname',
-          Value: 'Value',
-        }
-      ]
-      
-      // Do whatever you want to do with the file
-      let arrInfo = file.split("_")
-      console.log('File name: ' +arrInfo.length + ' - ' + file);
-      let currentPath = inprogressFolder + '\\' + file;
-      
-      let processedPath = directoryPath + '\\Processed';
-      let errPath = directoryPath + '\\Errors\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file;
-
-      if (arrInfo.length !== 7) {
-      	console.log('Err! Data format in correct')
-        
-      	fs.copyFileSync(currentPath, errPath);
-      	fs.unlinkSync(currentPath)
+    console.log('Start-------> ' + moment(new Date()).format("YYYY-MM-DD-HH:mm:ss"))
+    
+    //Calc to Write OPC UA
+    allSites.forEach(function(site){              
+      let result = filterItems(files, site.ip)    // ['apple', 'grapes']
+      if (result.length < 8) {
+        site.isWrite = 1
       }else{
-      	let site_id = arrInfo[0];
-      	let ip = arrInfo[1];
-      	let port = parseInt(arrInfo[2]);
-      	let tagname = arrInfo[3];
-        let ackTag = arrInfo[4];
+        site.isWrite = 0
+      }
+      // console.log('-----------------------')      // ['apple', 'grapes']
+    })
 
-      	fs.createReadStream(currentPath)
-				  .pipe(csv({separator:';'}))
-				  .on('data', (data_row) => {
-				  	//console.log('-----------------------------------')
-				  	// if (typeof(data_row) == 'Object') {
-				  	// 	console.log('object.....')
-				  	// }
-				  	let jsonData = {
-				  		site_id : site_id,
-				  		ip: ip,
-				  		timestamp: moment(data_row.TimeStr, "DD/MM/YYYY HH:mm:ss", true), //(data_row.TimeStr),
-				  		tagname: tagname,
-				  		value: parseFloat(data_row.Value),
-				  		created_at: new Date(),
-				  	}
-				  	let strDatetime = dateFormat(jsonData.timestamp, "mm/dd/yyyy HH:MM");
-				  	let jsonExportData = {
-		          TimeStamp: strDatetime,
-		          Tagname: site_id + ':METTUBE.'+ tagname,
-		          Value: jsonData.value.toFixed(1),
-				  	}
 
-				  	arrData.push(jsonData)
-				  	arrExportData.push(jsonExportData)
-				  })
-				  .on('end', async function(){
-            //console.log(arrData)
-            if (arrData.length == 0) {
-              try{
-                if( fs.existsSync(currentPath) ){
-                  fs.copyFileSync(currentPath, errPath);
-                  fs.unlinkSync(currentPath)
-                  await delay(50);
-                }
-              }catch(err){
-                console.log(err.message)
-              }
-              
-            }else{
-              let sts = await SaveDataToSQLServer(arrData)
-              console.log('SQL', site_id,':',sts)
-              await delay(50);
+	  //listing all files using forEach
+	  // await files.forEach(async function (file) {
+    for(let i = 0; i < files.length; i++){
+      let file = files[i];
+	  	count = count +1;
+	  	if (count < process.env.PROCESS_FILE) {
+  	  	let arrData = []
+  	  	let arrExportData = [
+          {
+            TimeStamp: 'TimeStamp',
+            Tagname: 'Tagname',
+            Value: 'Value',
+          }
+        ]
+        
+        // Do whatever you want to do with the file
+        let arrInfo = file.split("_")
+        console.log('File name: ' +arrInfo.length + ' - ' + file);
+        let currentPath = inprogressFolder + '\\' + file;
+        
+        let processedPath = directoryPath + '\\Processed';
+        let errPath = directoryPath + '\\Errors\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file;
 
-              await exportToCSVFile(site_id, tagname, arrExportData)                  
-              console.log('Export CSV ' + site_id + ' file processed successfully');
-              if (isMoveFile) {
-                let _strPath_Date = processedPath + '\\' + moment().format("YYYY_MM_DD")
-                let strPathFile = _strPath_Date + '\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file
+        if (arrInfo.length !== 7) {
+        	console.log('Err! Data format in correct')
+          
+        	fs.copyFileSync(currentPath, errPath);
+        	fs.unlinkSync(currentPath)
+        }else{
+        	let site_id = arrInfo[0];
+        	let ip = arrInfo[1];
+        	let port = parseInt(arrInfo[2]);
+        	let tagname = arrInfo[3];
+          let ackTag = arrInfo[4];
 
-                const folderDate = mkdirp.sync(_strPath_Date);
+        	fs.createReadStream(currentPath)
+            .on('error', () => {
+              console.log('Stream file error')
+            })
+  				  .pipe(csv({separator:';'}))
+  				  .on('data', (data_row) => {
+  				  	//console.log('-----------------------------------')
+  				  	// if (typeof(data_row) == 'Object') {
+  				  	// 	console.log('object.....')
+  				  	// }
+  				  	let jsonData = {
+  				  		site_id : site_id,
+  				  		ip: ip,
+  				  		timestamp: moment(data_row.TimeStr, "DD/MM/YYYY HH:mm:ss", true), //(data_row.TimeStr),
+  				  		tagname: tagname,
+  				  		value: parseFloat(data_row.Value),
+  				  		created_at: new Date(),
+  				  	}
+  				  	let strDatetime = dateFormat(jsonData.timestamp, "mm/dd/yyyy HH:MM");
+  				  	let jsonExportData = {
+  		          TimeStamp: strDatetime,
+  		          Tagname: site_id + ':METTUBE.'+ tagname,
+  		          Value: jsonData.value.toFixed(1),
+  				  	}
+
+  				  	arrData.push(jsonData)
+  				  	arrExportData.push(jsonExportData)
+  				  })
+  				  .on('end', async function(){
+              //console.log(arrData)
+              if (arrData.length == 0) {
                 try{
                   if( fs.existsSync(currentPath) ){
-                    fs.copyFileSync(currentPath, strPathFile);
+                    fs.copyFileSync(currentPath, errPath);
                     fs.unlinkSync(currentPath)
                     await delay(50);
                   }
-                  
                 }catch(err){
-                  console.log('Error delete file: '+ err.message)
+                  console.log('Move file err ' + err.message)
                 }
                 
-              }
-              sendAckToFlexy(site_id, ackTag, ip, port);
-            }			  	  				
-				  }) 
+              }else{
+                let sts = await SaveDataToSQLServer(arrData)
+                console.log('SQL', site_id,':',sts)
+                await delay(50);
+
+                await exportToCSVFile(site_id, tagname, arrExportData)                  
+                console.log('Export CSV ' + site_id + ' file processed successfully');
+                if (isMoveFile) {
+                  let _strPath_Date = processedPath + '\\' + moment().format("YYYY_MM_DD")
+                  let strPathFile = _strPath_Date + '\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file
+
+                  const folderDate = mkdirp.sync(_strPath_Date);
+                  try{
+                    if( fs.existsSync(currentPath) ){
+                      fs.copyFileSync(currentPath, strPathFile);
+                      fs.unlinkSync(currentPath)
+                      await delay(50);
+                    }
+                    
+                  }catch(err){
+                    // console.log('Error delete file: '+ err.message)
+                    console.log('Move file err ' + err.message)
+                  }
+                  
+                }
+                
+                function filterByIP(item) {
+                  if (item.ip == ip) {
+                    // item.isWrite = 1
+                    return item
+                  }                  
+                }
+
+                let site = allSites.filter(filterByIP)
+                console.log('isWrite OPCUA ', site[0].site_id,  site[0].isWrite)
+
+                if (site[0].isWrite) {
+                  sendAckToFlexy(site_id, ackTag, ip, port);
+                }
+                
+              }			  	  				
+  				  }) 
+            
+  				// await console.log('----end of file----', new Date())  
+          await delay(50);
           
-				// await console.log('----end of file----', new Date())  
-        await delay(50);
-        
-      }
+        }
       } //End if count
-	  });
-    
-	});
+	  } 
+	})
 }
 
 async function sendAckToFlexy(site_id, ackTag, ip, port){
@@ -360,6 +413,7 @@ function checkConnection(){
     })
     .on('end', async function(){
       //console.log(arrAllSite)
+
       arrAllSite.forEach(function(site){
         readOPCUA(site.site_id, site.ip, site.port, site.username, site.password)
       })
@@ -455,3 +509,5 @@ async function writeConnectionToCSV(site_id, value){
   await exportToCSVFile(site_id, 'CONNECTION', jsonConnectExportData)
   
 }
+
+

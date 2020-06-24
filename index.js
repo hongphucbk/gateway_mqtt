@@ -77,7 +77,7 @@ async function readFilesFromFlexy(){
     } 
     let count = 0;
 
-    console.log('Start-------> ' + new Date()) 
+    console.log('Start-------> ' + moment(new Date()).format("YYYY-MM-DD-HH:mm:ss")) 
     //listing all files using forEach
     await files.forEach(async function (file) {
       count = count +1;
@@ -97,13 +97,13 @@ async function readFilesFromFlexy(){
       let currentPath = inprogressFolder + '\\' + file;
       
       let processedPath = directoryPath + '\\Processed';
-      
+      let errPath = directoryPath + '\\Errors\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file;
+
       if (arrInfo.length !== 7) {
         console.log('Err! Data format in correct')
-        let errPath = directoryPath + '\\Errors\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file;
+        
         fs.copyFileSync(currentPath, errPath);
         fs.unlinkSync(currentPath)
-        await delay(50);
       }else{
         let site_id = arrInfo[0];
         let ip = arrInfo[1];
@@ -139,9 +139,16 @@ async function readFilesFromFlexy(){
           .on('end', async function(){
             //console.log(arrData)
             if (arrData.length == 0) {
-              fs.copyFileSync(currentPath, errPath);
-              fs.unlinkSync(currentPath)
-              await delay(50);
+              try{
+                if( fs.existsSync(currentPath) ){
+                  fs.copyFileSync(currentPath, errPath);
+                  fs.unlinkSync(currentPath)
+                  await delay(50);
+                }
+              }catch(err){
+                console.log('Move file err ' + err.message)
+              }
+              
             }else{
               let sts = await SaveDataToSQLServer(arrData)
               console.log('SQL', site_id,':',sts)
@@ -154,18 +161,23 @@ async function readFilesFromFlexy(){
                 let strPathFile = _strPath_Date + '\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file
 
                 const folderDate = mkdirp.sync(_strPath_Date);
-
-                fs.copyFileSync(currentPath, strPathFile);
-                fs.unlinkSync(currentPath)
-                await delay(50);
+                try{
+                  if( fs.existsSync(currentPath) ){
+                    fs.copyFileSync(currentPath, strPathFile);
+                    fs.unlinkSync(currentPath)
+                    await delay(50);
+                  }
+                  
+                }catch(err){
+                  // console.log('Error delete file: '+ err.message)
+                  console.log('Move file err ' + err.message)
+                }
+                
               }
-
               sendAckToFlexy(site_id, ackTag, ip, port);
             }                   
           }) 
-          .on('err', async function(){
-            console.log('Read stream error ', err.message)
-          })
+          
         // await console.log('----end of file----', new Date())  
         await delay(50);
         
