@@ -174,9 +174,7 @@ async function readFilesFromFlexy(){
               sendAckToFlexy(site_id, ackTag, ip, port);
             }			  	  				
 				  }) 
-          .on('err', async function(){
-            console.log('Read stream error ', err.message)
-          })
+          
 				// await console.log('----end of file----', new Date())  
         await delay(50);
         
