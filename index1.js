@@ -144,11 +144,11 @@ async function readFilesFromFlexy(){
               await delay(50);
             }else{
               let sts = await SaveDataToSQLServer(arrData)
-              console.log('Saved SQL - ', site_id,': ', sts)
+              console.log('SQL', site_id,':',sts)
               await delay(50);
 
               await exportToCSVFile(site_id, tagname, arrExportData)                  
-              console.log('CSV ' + site_id + 'file successfully processed');
+              console.log('CSV ' + site_id + ' file processed successfully');
               if (isMoveFile) {
                 let _strPath_Date = processedPath + '\\' + moment().format("YYYY_MM_DD")
                 let strPathFile = _strPath_Date + '\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file
@@ -160,10 +160,9 @@ async function readFilesFromFlexy(){
                 await delay(50);
               }
 
-              let OPCUAstatus = await writeAckOPCUA(site_id, ackTag, ip, port);
-              console.log('OPC UA ', site_id,' ', ackTag + ': ',OPCUAstatus)
+              sendAckToFlexy(site_id, ackTag, ip, port);
             }			  	  				
-				  })
+				  }) 
           .on('err', async function(){
             console.log('Read stream error ', err.message)
           })
@@ -177,11 +176,15 @@ async function readFilesFromFlexy(){
 	});
 }
 
+async function sendAckToFlexy(site_id, ackTag, ip, port){
+  let OPCUAstatus = await writeAckOPCUA(site_id, ackTag, ip, port);
+  console.log('OPC UA', site_id,' ', ackTag + ':',OPCUAstatus)
+}
+
 async function SaveDataToSQLServer(arrData){
   //console.log('data = ', arrData)
   let strDt = '';
   let current = moment(new Date()).format("YYYY-MM-DD HH:mm:ss")
-
 
   await arrData.forEach(function(objdt){ 	
   	let strTime = moment(objdt.timestamp).format("YYYY-MM-DD HH:mm:ss")
@@ -238,7 +241,12 @@ function exportToCSVFile(site_id, tagname, data){
   const folderDate = mkdirp.sync(_strPath_Date);
   const folderHour = mkdirp.sync(_strPath_Hour);
   let strFullPathBackup = _strPath_Hour + '\\DT_' + site_id + '_' + tagname + '_' + dateTime + '.csv'
-  fs.writeFileSync(strFullPathBackup, csvData)
+  try{
+    fs.writeFileSync(strFullPathBackup, csvData)
+  }catch (err){
+    console.log('Write CSV have issue ' + err.message)
+  }
+  
 }
 
 function deleteDataAfter10days(tableName){
