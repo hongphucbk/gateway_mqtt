@@ -186,8 +186,8 @@ async function readFilesFromFlexy(){
 }
 
 async function sendAckToFlexy(site_id, ackTag, ip, port){
-  let OPCUAstatus = await writeAckOPCUA(site_id, ackTag, ip, port);
-  console.log('OPC UA', site_id,' ', ackTag + ':',OPCUAstatus)
+  //let OPCUAstatus = await writeAckOPCUA(site_id, ackTag, ip, port);
+  //console.log('OPC UA', site_id,' ', ackTag + ':',OPCUAstatus)
 }
 
 async function SaveDataToSQLServer(arrData){
