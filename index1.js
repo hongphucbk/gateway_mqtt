@@ -148,7 +148,7 @@ async function readFilesFromFlexy(){
               await delay(50);
 
               await exportToCSVFile(site_id, tagname, arrExportData)                  
-              console.log('CSV ' + site_id + ' file processed successfully');
+              console.log('Export CSV ' + site_id + ' file processed successfully');
               if (isMoveFile) {
                 let _strPath_Date = processedPath + '\\' + moment().format("YYYY_MM_DD")
                 let strPathFile = _strPath_Date + '\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file

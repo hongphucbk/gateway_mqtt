@@ -40,21 +40,23 @@ const PROCESS_TIME = parseInt(process.env.PROCESS_TIME)*1000;
 const REMOVE_TIME = parseInt(process.env.REMOVE_TIME)*1000;
 const PROCESSED_STORE = parseInt(process.env.PROCESSED_STORE)*1000;
 const CHECK_CONNECT_TIME = parseInt(process.env.CHECK_CONNECT_TIME)*1000;
-
+const BACKUP_SQL_DAY = parseInt(process.env.BACKUP_SQL_DAY);
+const directoryPath = process.env.CSV_FLEXY_PATH;
+const inprogressFolder = directoryPath + '\\Inprogress';
 
 //*******************************************
 //joining path of directory
 
 async function run(){
-	setInterval(async function(){
-  	readFilesFromFlexy();
+  setInterval(async function(){
+    readFilesFromFlexy();
     //checkConnection()
-  	//await writeAckOPCUA()
-  	console.log('====================================')
+    //await writeAckOPCUA()
+    console.log('====================================')
   }, PROCESS_TIME);
 
   setInterval(async function(){
-  	deleteDataAfter10days(strSQLTableName)
+    deleteDataAfter10days(strSQLTableName)
     deleteDataAfter10days(SQL_TABLE_STATUS)
     deleteProcessedFolder(PROCESSED_STORE, process.env.CSV_FLEXY_PATH)
   }, REMOVE_TIME);  
@@ -67,90 +69,86 @@ run();
 
 
 async function readFilesFromFlexy(){
-	
-	const directoryPath = process.env.CSV_FLEXY_PATH;
-	//passsing directoryPath and callback function
-	let inprogressFolder = directoryPath + '\\Inprogress';
-	await fs.readdir(inprogressFolder, async function (err, files) {
-	  //handling error
-	  if (err) {
-	    return console.log('Unable to scan directory: ' + err);
-	  } 
-	  let count = 0;
-	  //listing all files using forEach
-	  await files.forEach(async function (file) {
-	  	count = count +1;
-	  	if (count < 20) {
-	  	let arrData = []
-	  	let arrExportData = [
+  //passsing directoryPath and callback function
+    await fs.readdir(inprogressFolder, async function (err, files) {
+    //handling error
+    if (err) {
+      return console.log('Unable to scan directory: ' + err);
+    } 
+    let count = 0;
+
+    console.log('Start-------> ' + new Date()) 
+    //listing all files using forEach
+    await files.forEach(async function (file) {
+      count = count +1;
+      if (count < 20) {
+      let arrData = []
+      let arrExportData = [
         {
           TimeStamp: 'TimeStamp',
           Tagname: 'Tagname',
           Value: 'Value',
         }
       ]
+      
       // Do whatever you want to do with the file
-      //console.log(file);
       let arrInfo = file.split("_")
-      console.log(file);
-
+      console.log('File name: ' +arrInfo.length + ' - ' + file);
       let currentPath = inprogressFolder + '\\' + file;
-      let errPath = directoryPath + '\\Errors\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file;
-      let processedPath = directoryPath + '\\Processed\\';
+      
+      let processedPath = directoryPath + '\\Processed';
       
       if (arrInfo.length !== 7) {
-      	console.log('Err! Data format in correct')
-
-      	fs.copyFileSync(currentPath, errPath);
-      	fs.unlinkSync(currentPath)
-
+        console.log('Err! Data format in correct')
+        let errPath = directoryPath + '\\Errors\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file;
+        fs.copyFileSync(currentPath, errPath);
+        fs.unlinkSync(currentPath)
+        await delay(50);
       }else{
-      	let site_id = arrInfo[0];
-      	let ip = arrInfo[1];
-      	let port = parseInt(arrInfo[2]);
-      	let tagname = arrInfo[3];
+        let site_id = arrInfo[0];
+        let ip = arrInfo[1];
+        let port = parseInt(arrInfo[2]);
+        let tagname = arrInfo[3];
         let ackTag = arrInfo[4];
 
-      	fs.createReadStream(currentPath)
-				  .pipe(csv({separator:';'}))
-				  .on('data', (data_row) => {
-				  	//console.log('-----------------------------------')
-				  	// if (typeof(data_row) == 'Object') {
-				  	// 	console.log('object.....')
-				  	// }
-				  	let jsonData = {
-				  		site_id : site_id,
-				  		ip: ip,
-				  		timestamp: moment(data_row.TimeStr, "DD/MM/YYYY HH:mm:ss", true), //(data_row.TimeStr),
-				  		tagname: tagname,
-				  		value: parseFloat(data_row.Value),
-				  		created_at: new Date(),
-				  	}
-				  	let strDatetime = dateFormat(jsonData.timestamp, "mm/dd/yyyy HH:MM");
-				  	let jsonExportData = {
-		          TimeStamp: strDatetime,
-		          Tagname: site_id + ':METTUBE.'+ tagname,
-		          Value: jsonData.value.toFixed(1),
-				  	}
+        fs.createReadStream(currentPath)
+          .pipe(csv({separator:';'}))
+          .on('data', (data_row) => {
+            //console.log('-----------------------------------')
+            // if (typeof(data_row) == 'Object') {
+            //  console.log('object.....')
+            // }
+            let jsonData = {
+              site_id : site_id,
+              ip: ip,
+              timestamp: moment(data_row.TimeStr, "DD/MM/YYYY HH:mm:ss", true), //(data_row.TimeStr),
+              tagname: tagname,
+              value: parseFloat(data_row.Value),
+              created_at: new Date(),
+            }
+            let strDatetime = dateFormat(jsonData.timestamp, "mm/dd/yyyy HH:MM");
+            let jsonExportData = {
+              TimeStamp: strDatetime,
+              Tagname: site_id + ':METTUBE.'+ tagname,
+              Value: jsonData.value.toFixed(1),
+            }
 
-				  	arrData.push(jsonData)
-				  	arrExportData.push(jsonExportData)
-				  })
-				  .on('end', async function(){
-            console.log(arrData)
+            arrData.push(jsonData)
+            arrExportData.push(jsonExportData)
+          })
+          .on('end', async function(){
+            //console.log(arrData)
             if (arrData.length == 0) {
               fs.copyFileSync(currentPath, errPath);
               fs.unlinkSync(currentPath)
+              await delay(50);
             }else{
-              let OPCUAstatus = await writeAckOPCUA(site_id, ackTag, ip, port);
-              console.log('OPC UA status ', site_id,' ', ackTag + ':',' ' ,OPCUAstatus)
-
               let sts = await SaveDataToSQLServer(arrData)
-              console.log('Saved SQL status - ', site_id,' ', sts)
+              console.log('SQL', site_id,':',sts)
               await delay(50);
 
               await exportToCSVFile(site_id, tagname, arrExportData)                  
-              console.log('CSV ' + site_id + 'file successfully processed');
+              console.log('Export CSV ' + site_id + ' file processed successfully');
               if (isMoveFile) {
                 let _strPath_Date = processedPath + '\\' + moment().format("YYYY_MM_DD")
                 let strPathFile = _strPath_Date + '\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file
@@ -161,14 +159,26 @@ async function readFilesFromFlexy(){
                 fs.unlinkSync(currentPath)
                 await delay(50);
               }
-            }			  	  				
-				  });
-				// await console.log('----end of file----', new Date())  
+
+              sendAckToFlexy(site_id, ackTag, ip, port);
+            }                   
+          }) 
+          .on('err', async function(){
+            console.log('Read stream error ', err.message)
+          })
+        // await console.log('----end of file----', new Date())  
         await delay(50);
+        
       }
       } //End if count
-	  });
-	});
+    });
+    
+  });
+}
+
+async function sendAckToFlexy(site_id, ackTag, ip, port){
+  let OPCUAstatus = await writeAckOPCUA(site_id, ackTag, ip, port);
+  console.log('OPC UA', site_id,' ', ackTag + ':',OPCUAstatus)
 }
 
 async function SaveDataToSQLServer(arrData){
@@ -176,29 +186,28 @@ async function SaveDataToSQLServer(arrData){
   let strDt = '';
   let current = moment(new Date()).format("YYYY-MM-DD HH:mm:ss")
 
-
-  await arrData.forEach(function(objdt){ 	
-  	let strTime = moment(objdt.timestamp).format("YYYY-MM-DD HH:mm:ss")
-  	strDt = strDt + "('" + objdt.site_id + "', '" + objdt.tagname + "', " +  objdt.value + ", '" + strTime + "', '"+current+"' ),"
+  await arrData.forEach(function(objdt){  
+    let strTime = moment(objdt.timestamp).format("YYYY-MM-DD HH:mm:ss")
+    strDt = strDt + "('" + objdt.site_id + "', '" + objdt.tagname + "', " +  objdt.value + ", '" + strTime + "', '"+current+"' ),"
   })
   strDt = strDt.substr(0, strDt.length - 1);
 
   //console.log('a =', strDt)
 
   let strQuery = 'INSERT INTO ' + strSQLTableName + ' (site_id, tagname, datavalue, time_stamp, created_at) '
-  						 + ' VALUES ' 
+               + ' VALUES ' 
                + strDt
   try {
     let pool = await sql.connect(sqlConfig)
     let result1 = await pool.request()
-      						.query(strQuery)
+                  .query(strQuery)
         
     //console.log(result1)
     return 1;
-	} catch (err) {
+  } catch (err) {
     //console.log("SQL Error " + err)
     return 0;
-	}
+  }
 }
 
 function exportToCSVFile(site_id, tagname, data){
@@ -232,7 +241,12 @@ function exportToCSVFile(site_id, tagname, data){
   const folderDate = mkdirp.sync(_strPath_Date);
   const folderHour = mkdirp.sync(_strPath_Hour);
   let strFullPathBackup = _strPath_Hour + '\\DT_' + site_id + '_' + tagname + '_' + dateTime + '.csv'
-  fs.writeFileSync(strFullPathBackup, csvData)
+  try{
+    fs.writeFileSync(strFullPathBackup, csvData)
+  }catch (err){
+    console.log('Write CSV have issue ' + err.message)
+  }
+  
 }
 
 function deleteDataAfter10days(tableName){
@@ -244,7 +258,7 @@ function deleteDataAfter10days(tableName){
     else
     {
       var request = new sql.Request();
-      let before10days = moment().subtract(1, 'days');
+      let before10days = moment().subtract(BACKUP_SQL_DAY, 'days');
       let beforeday = new Date(before10days)
       //console.log('data', beforeday)
       request.input('beforeday', sql.DateTimeOffset, beforeday);
@@ -281,17 +295,17 @@ async function writeAckOPCUA(site_id, tagname, ip, port){
       // console.log(" value = " , dataValue2.toString());
       let strNodeID = 'ns=' + process.env.OPCUA_NODEID_NS + ';s=ack_' + tagname;
       let nodeToWrite = {
-		    nodeId: strNodeID, //+ tagname,
-		    attributeId: AttributeIds.Value,
-		    value: {
-	        value: {
-		        dataType: DataType.Boolean, 
-		        value: true
-	        }
-		    }
-			}
-			let res = await session.write(nodeToWrite);
-			//console.log(res);
+        nodeId: strNodeID, //+ tagname,
+        attributeId: AttributeIds.Value,
+        value: {
+          value: {
+            dataType: DataType.Boolean, 
+            value: true
+          }
+        }
+      }
+      let res = await session.write(nodeToWrite);
+      //console.log(res);
       //await new Promise((resolve) => setTimeout(resolve, 1000000000));
       //await monitoredItemGroup.terminate();
       //await session.close();
@@ -299,8 +313,8 @@ async function writeAckOPCUA(site_id, tagname, ip, port){
       await session.close();
       await client.disconnect();
       if (res._value == 0) {
-      	return 1
-      	console.log("Done !");
+        return 1
+        console.log("Done !");
       }
       //readOPCUA1();
   } catch (err) {
