@@ -89,7 +89,6 @@ const filterItems = (arr, query) => {
 }
 
 
-
 async function readFilesFromFlexy(){
 	//passsing directoryPath and callback function
 	await fs.readdir(inprogressFolder, async function (err, files) {
@@ -137,9 +136,12 @@ async function readFilesFromFlexy(){
 
         if (arrInfo.length !== 7) {
         	console.log('Err! Data format in correct')
-          
-        	fs.copyFileSync(currentPath, errPath);
-        	fs.unlinkSync(currentPath)
+          try{
+            fs.copyFileSync(currentPath, errPath);
+            fs.unlinkSync(currentPath)
+          }catch(err){
+            console.log('Move bank file err ' + err.message)
+          }
         }else{
         	let site_id = arrInfo[0];
         	let ip = arrInfo[1];
@@ -185,7 +187,7 @@ async function readFilesFromFlexy(){
                     await delay(50);
                   }
                 }catch(err){
-                  console.log('Move file err ' + err.message)
+                  console.log('Move bank file err ' + err.message)
                 }
                 
               }else{
@@ -209,7 +211,7 @@ async function readFilesFromFlexy(){
                     
                   }catch(err){
                     // console.log('Error delete file: '+ err.message)
-                    console.log('Move file err ' + err.message)
+                    console.log('Move processed file err ' + err.message)
                   }
                   
                 }
