@@ -143,6 +143,7 @@ async function readFilesFromFlexy(){
                 if( fs.existsSync(currentPath) ){
                   fs.copyFileSync(currentPath, errPath);
                   fs.unlinkSync(currentPath)
+                  await delay(50);
                 }
               }catch(err){
                 console.log(err.message)
@@ -164,6 +165,7 @@ async function readFilesFromFlexy(){
                   if( fs.existsSync(currentPath) ){
                     fs.copyFileSync(currentPath, strPathFile);
                     fs.unlinkSync(currentPath)
+                    await delay(50);
                   }
                   
                 }catch(err){
