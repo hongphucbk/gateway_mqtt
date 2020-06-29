@@ -167,7 +167,8 @@ async function readFilesFromFlexy(){
 
           fs.createReadStream(currentPath)
             .on('error', () => {
-              console.log('Stream file error')
+              //console.log('Stream file error')
+              log('Stream file error ', strLogPath + '\\log.txt');
             })
             .pipe(csv({separator:';'}))
             .on('data', (data_row) => {
@@ -186,11 +187,8 @@ async function readFilesFromFlexy(){
                   Tagname: site_id + ':METTUBE.'+ tagname,
                   Value: jsonData.value.toFixed(1),
                 }
-
                 arrData.push(jsonData)
                 arrExportData.push(jsonExportData)
-
-
               }catch (err){
                 //console.log('Error file when stream ' + err.message)
                 log('Error file when stream ' + err.message, strLogPath + '\\log.txt');
@@ -538,11 +536,17 @@ function saveConnectionStatus(site_id, is_connect){
 
 
 async function writeConnectionToCSV(site_id, value){
-  let jsonConnectExportData = [{
-    TimeStamp: dateFormat(new Date(), "mm/dd/yyyy HH:MM"),
-    Tagname: site_id + ':METTUBE.'+ 'CONNECTION',
-    Value: value,
-  }]
+  let jsonConnectExportData = [
+    {
+      TimeStamp: 'TimeStamp',
+      Tagname: 'Tagname',
+      Value: 'Value',
+    },
+    {
+      TimeStamp: dateFormat(new Date(), "mm/dd/yyyy HH:MM"),
+      Tagname: site_id + ':METTUBE.'+ 'CONNECTION',
+      Value: value,
+    }]
   //console.log(jsonConnectExportData)
   await exportToCSVFile(site_id, 'CONNECTION', jsonConnectExportData)
   
