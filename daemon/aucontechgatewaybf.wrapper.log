@@ -1,2 +1,0 @@
-2020-06-29 11:29:40 - Starting D:\SOFT\node.exe  --harmony "E:\Aucontech\02. Project\02. Linde Malaysia\Project\GatewayIot_Pilot_Phase2\node_modules\node-windows\lib\wrapper.js" --file "E:\Aucontech\02. Project\02. Linde Malaysia\Project\GatewayIot_Pilot_Phase2\index.js" --scriptoptions= --log "AucontechGatewayBF wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
-2020-06-29 11:29:40 - Started 12908
