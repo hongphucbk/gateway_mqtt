@@ -12,6 +12,7 @@ const dateFormat = require('dateformat');
 const ExportToCsv = require('export-to-csv').ExportToCsv;
 const mkdirp = require('mkdirp');
 const rimraf = require("rimraf");
+const log = require('log-to-file');
 
 const  { 
   OPCUAClient,
@@ -43,6 +44,7 @@ const CHECK_CONNECT_TIME = parseInt(process.env.CHECK_CONNECT_TIME)*1000;
 const BACKUP_SQL_DAY = parseInt(process.env.BACKUP_SQL_DAY);
 const directoryPath = process.env.CSV_FLEXY_PATH;
 const inprogressFolder = directoryPath + '\\Inprogress';
+const logFolder = directoryPath + '\\Log';
 
 //*******************************************
 // Global variable
@@ -51,6 +53,9 @@ const inprogressFolder = directoryPath + '\\Inprogress';
 //*****************
 //joining path of directory
 let allSites = []
+let strLogPath = logFolder + '\\' + moment(new Date()).format("YYYYMMDD");
+mkdirp.sync(strLogPath);
+
 async function run(){
   fs.createReadStream('./config/site_information.txt')
     .on('error', () => {
@@ -65,7 +70,15 @@ async function run(){
       //console.log(allSites)
     })
 
+  setInterval(function() {
+    strLogPath = logFolder + '\\' + moment(new Date()).format("YYYYMMDD");
+    mkdirp.sync(strLogPath);
+  },10*60*60*1000)
+
   setInterval(async function(){
+    strLogPath = logFolder + '\\' + moment(new Date()).format("YYYYMMDD");
+    
+
     readFilesFromFlexy();
     //checkConnection()
     //await writeAckOPCUA()
@@ -97,8 +110,9 @@ async function readFilesFromFlexy(){
       return console.log('Unable to scan directory: ' + err);
     }
     let count = 0;
-    console.log('Start-------> ' + moment(new Date()).format("YYYY-MM-DD-HH:mm:ss"))
-    
+    //console.log('Start-------> ' + moment(new Date()).format("YYYY-MM-DD-HH:mm:ss"))
+    log('Start-------> ' + moment(new Date()).format("YYYY-MM-DD-HH:mm:ss"), strLogPath + '\\log.txt');
+
     //Calc to Write OPC UA
     allSites.forEach(function(site){              
       let result = filterItems(files, site.ip)    // ['apple', 'grapes']
@@ -135,12 +149,14 @@ async function readFilesFromFlexy(){
         let errPath = directoryPath + '\\Errors\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file;
 
         if (arrInfo.length !== 7) {
-          console.log('Err! Data format in correct')
+          //console.log('Err! Data format in correct')
+          log('Err! Data format in correct', strLogPath + '\\log.txt');
           try{
             fs.copyFileSync(currentPath, errPath);
             fs.unlinkSync(currentPath)
           }catch(err){
-            console.log('Move bank file err ' + err.message)
+            //console.log('Move bank file err ' + err.message)
+            log('Move bank file err ' + err.message, strLogPath + '\\log.txt');
           }
         }else{
           let site_id = arrInfo[0];
@@ -155,27 +171,35 @@ async function readFilesFromFlexy(){
             })
             .pipe(csv({separator:';'}))
             .on('data', (data_row) => {
+              try{
+                let jsonData = {
+                  site_id : site_id,
+                  ip: ip,
+                  timestamp: moment(data_row.TimeStr, "DD/MM/YYYY HH:mm:ss", true), //(data_row.TimeStr),
+                  tagname: tagname,
+                  value: parseFloat(data_row.Value),
+                  created_at: new Date(),
+                }
+                let strDatetime = dateFormat(jsonData.timestamp, "mm/dd/yyyy HH:MM");
+                let jsonExportData = {
+                  TimeStamp: strDatetime,
+                  Tagname: site_id + ':METTUBE.'+ tagname,
+                  Value: jsonData.value.toFixed(1),
+                }
+
+                arrData.push(jsonData)
+                arrExportData.push(jsonExportData)
+
+
+              }catch (err){
+                //console.log('Error file when stream ' + err.message)
+                log('Error file when stream ' + err.message, strLogPath + '\\log.txt');
+              }
               //console.log('-----------------------------------')
               // if (typeof(data_row) == 'Object') {
               //  console.log('object.....')
               // }
-              let jsonData = {
-                site_id : site_id,
-                ip: ip,
-                timestamp: moment(data_row.TimeStr, "DD/MM/YYYY HH:mm:ss", true), //(data_row.TimeStr),
-                tagname: tagname,
-                value: parseFloat(data_row.Value),
-                created_at: new Date(),
-              }
-              let strDatetime = dateFormat(jsonData.timestamp, "mm/dd/yyyy HH:MM");
-              let jsonExportData = {
-                TimeStamp: strDatetime,
-                Tagname: site_id + ':METTUBE.'+ tagname,
-                Value: jsonData.value.toFixed(1),
-              }
-
-              arrData.push(jsonData)
-              arrExportData.push(jsonExportData)
+              
             })
             .on('end', async function(){
               //console.log(arrData)
@@ -187,16 +211,19 @@ async function readFilesFromFlexy(){
                     await delay(50);
                   }
                 }catch(err){
-                  console.log('Move bank file err ' + err.message)
+                  //console.log('Move bank file err ' + err.message)
+                  log('Move bank file err ' + err.message, strLogPath + '\\log.txt');
                 }
                 
               }else{
                 let sts = await SaveDataToSQLServer(arrData)
-                console.log('SQL', site_id,':',sts)
+                //console.log('SQL', site_id,':',sts)
+                log('SQL saved ' + site_id +': ' + sts, strLogPath + '\\log.txt');
                 await delay(50);
 
                 await exportToCSVFile(site_id, tagname, arrExportData)                  
-                console.log('Export CSV ' + site_id + ' file processed successfully');
+                //console.log('Export CSV ' + site_id + ' file processed successfully');
+                log('Export CSV ' + site_id + ' ' + tagname + ' file processed successfully', strLogPath + '\\log.txt');
                 if (isMoveFile) {
                   let _strPath_Date = processedPath + '\\' + moment().format("YYYY_MM_DD")
                   let strPathFile = _strPath_Date + '\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file
@@ -210,8 +237,8 @@ async function readFilesFromFlexy(){
                     }
                     
                   }catch(err){
-                    // console.log('Error delete file: '+ err.message)
-                    console.log('Move processed file err ' + err.message)
+                    //console.log('Move processed file err ' + err.message)
+                    log('Move processed file err ' + err.message, strLogPath + '\\log.txt');
                   }
                   
                 }
@@ -224,7 +251,7 @@ async function readFilesFromFlexy(){
                 }
 
                 let site = allSites.filter(filterByIP)
-                console.log('isWrite OPCUA ', site[0].site_id,  site[0].isWrite)
+                //console.log('isWrite OPCUA ', site[0].site_id,  site[0].isWrite)
 
                 if (site[0].isWrite) {
                   sendAckToFlexy(site_id, ackTag, ip, port);
@@ -245,6 +272,7 @@ async function readFilesFromFlexy(){
 async function sendAckToFlexy(site_id, ackTag, ip, port){
   let OPCUAstatus = await writeAckOPCUA(site_id, ackTag, ip, port);
   console.log('OPC UA', site_id,' ', ackTag + ':',OPCUAstatus)
+  log('OPC UA '+ site_id + '' + ackTag + ':' + OPCUAstatus, strLogPath + '\\log.txt');
 }
 
 async function SaveDataToSQLServer(arrData){
@@ -293,8 +321,14 @@ function exportToCSVFile(site_id, tagname, data){
   const csvData = csvExporter.generateCsv(data, true);
   var dateTime = new Date();
   dateTime = moment(dateTime).format("YYYYMMDD_HHmmss");
-  let strFullPath = process.env.CSV_EXPORT_PATH + '\\Data_' + site_id + '_' + dateTime + '.csv'
-  fs.writeFileSync(strFullPath, csvData)
+  let strFullPath = process.env.CSV_EXPORT_PATH + '\\Data_' + site_id + '_'  + tagname + '_' + dateTime + '.csv'
+  
+  try{
+    fs.writeFileSync(strFullPath, csvData)
+    //fs.writeFileSync(strFullPathBackup, csvData)
+  }catch (err){
+    console.log('Write CSV have issue ' + err.message)
+  }
 
   //for Backup
   let _strPath_Year = process.env.CSV_BACKUP_PATH +'\\' + moment().format("YYYY")
@@ -463,9 +497,11 @@ async function readOPCUA(site_id, ip, port, username, password){
     await new Promise((resolve) => setTimeout(resolve, 2000));
     await session.close();
     await client.disconnect();
-    console.log('Connect ' + ip + ':' + port + ' successfully');
+    //console.log('Connect ' + ip + ':' + port + ' successfully');
+    log('Connect ' + ip + ':' + port + ' successfully', strLogPath + '\\log.txt');
     writeConnectionToCSV(site_id, 1)
     saveConnectionStatus(site_id, 1)
+
   } catch (err) {
       console.log("Connect Error", err.message);
       writeConnectionToCSV(site_id, 0)
