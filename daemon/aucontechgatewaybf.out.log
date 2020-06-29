@@ -1,0 +1,805 @@
+================================================================================
+Start-------> 2020-06-29-11:31:05
+================================================================================
+Start-------> 2020-06-29-11:31:09
+Connect 124.158.10.133:4840 successfully
+================================================================================
+Start-------> 2020-06-29-11:31:14
+================================================================================
+Start-------> 2020-06-29-11:31:19
+Connect 124.158.10.133:4840 successfully
+================================================================================
+Start-------> 2020-06-29-11:31:24
+================================================================================
+Start-------> 2020-06-29-11:31:29
+Connect 124.158.10.133:4840 successfully
+================================================================================
+Start-------> 2020-06-29-11:31:34
+================================================================================
+Start-------> 2020-06-29-11:31:39
+Connect 124.158.10.133:4840 successfully
+================================================================================
+Start-------> 2020-06-29-11:31:44
+================================================================================
+Start-------> 2020-06-29-11:31:49
+Connect 124.158.10.133:4840 successfully
+================================================================================
+Start-------> 2020-06-29-11:31:54
+================================================================================
+Start-------> 2020-06-29-11:31:59
+Connect 124.158.10.133:4840 successfully
+================================================================================
+Start-------> 2020-06-29-11:32:04
+================================================================================
+Start-------> 2020-06-29-11:32:09
+Connect 124.158.10.133:4840 successfully
+================================================================================
+Start-------> 2020-06-29-11:32:14
+================================================================================
+Start-------> 2020-06-29-11:32:19
+Connect 124.158.10.133:4840 successfully
+================================================================================
+Start-------> 2020-06-29-11:32:24
+================================================================================
+Start-------> 2020-06-29-11:32:29
+Connect 124.158.10.133:4840 successfully
+================================================================================
+Start-------> 2020-06-29-11:32:34
+================================================================================
+Start-------> 2020-06-29-11:32:39
+Connect 124.158.10.133:4840 successfully
+================================================================================
+Start-------> 2020-06-29-11:32:44
+================================================================================
+Start-------> 2020-06-29-11:32:49
+Connect 124.158.10.133:4840 successfully
+================================================================================
+Start-------> 2020-06-29-11:32:54
+================================================================================
+Start-------> 2020-06-29-11:32:59
+Connect 124.158.10.133:4840 successfully
+================================================================================
+Start-------> 2020-06-29-11:33:04
+================================================================================
+Start-------> 2020-06-29-11:33:09
+Connect 124.158.10.133:4840 successfully
+================================================================================
+Start-------> 2020-06-29-11:33:14
+================================================================================
+Start-------> 2020-06-29-11:33:19
+Connect 124.158.10.133:4840 successfully
+================================================================================
+Start-------> 2020-06-29-11:33:24
+================================================================================
+Start-------> 2020-06-29-11:33:30
+Connect 124.158.10.133:4840 successfully
+================================================================================
+Start-------> 2020-06-29-11:33:35
+================================================================================
+Start-------> 2020-06-29-11:33:40
+Connect 124.158.10.133:4840 successfully
+================================================================================
+Start-------> 2020-06-29-11:33:45
+================================================================================
+Start-------> 2020-06-29-11:33:50
+Connect 124.158.10.133:4840 successfully
+================================================================================
+Start-------> 2020-06-29-11:33:55
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (2) - Copy - Copy.csv-113354.csv
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (2) - Copy.csv-113354.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 1
+isWrite OPCUA  MY999952 1
+OPC UA MY999952   Temperature: 1
+OPC UA MY999952   Temperature: 1
+================================================================================
+Start-------> 2020-06-29-11:34:00
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (2).csv-113354.csv
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (3) - Copy.csv-113355.csv
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (3).csv-113355.csv
+SQL MY999952 : 1
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (4) - Copy.csv-113355.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (4).csv-113355.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy - Copy (2).csv-113355.csv
+isWrite OPCUA  MY999952 0
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy - Copy (3).csv-113355.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy - Copy - Copy (2).csv-113355.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy - Copy - Copy.csv-113355.csv
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy - Copy.csv-113356.csv
+SQL MY999952 : 1
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy.csv-113356.csv
+Export CSV MY999952 file processed successfully
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127.csv-113356.csv
+isWrite OPCUA  MY999952 0
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102128.csv-113356.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102227.csv-113356.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (2) - Copy - Copy.csv-113356.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (2) - Copy.csv-113356.csv
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (2).csv-113356.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (3) - Copy.csv-113357.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (3).csv-113357.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+Connect 124.158.10.133:4840 successfully
+================================================================================
+Start-------> 2020-06-29-11:34:05
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (4).csv-113357.csv
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy (2) - Copy.csv-113357.csv
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy (2).csv-113357.csv
+SQL MY999952 : 1
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy (3).csv-113358.csv
+Export CSV MY999952 file processed successfully
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy - Copy (2).csv-113358.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy - Copy - Copy.csv-113358.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy - Copy.csv-113358.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy.csv-113358.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy.csv-113358.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127.csv-113358.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_127127.csv-113359.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN22_Temperature_23062020_102127 - Copy (2) - Copy - Copy.csv-113359.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN22_Temperature_23062020_102127 - Copy (2) - Copy.csv-113359.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN22_Temperature_23062020_102127 - Copy (2).csv-113359.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN22_Temperature_23062020_102127 - Copy (3) - Copy.csv-113359.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN22_Temperature_23062020_102127 - Copy (3).csv-113359.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN22_Temperature_23062020_102127 - Copy (4) - Copy.csv-113359.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN22_Temperature_23062020_102127 - Copy (4).csv-113359.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN22_Temperature_23062020_102127 - Copy - Copy (2) - Copy.csv-113400.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+isWrite OPCUA  MY999952 0
+================================================================================
+Start-------> 2020-06-29-11:34:10
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN22_Temperature_23062020_102127 - Copy - Copy (2).csv-113400.csv
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN22_Temperature_23062020_102127 - Copy - Copy (3).csv-113400.csv
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN22_Temperature_23062020_102127 - Copy - Copy - Copy (2).csv-113400.csv
+SQL MY999952 : 1
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN22_Temperature_23062020_102127 - Copy - Copy - Copy - Copy.csv-113400.csv
+Export CSV MY999952 file processed successfully
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN22_Temperature_23062020_102127 - Copy - Copy - Copy.csv-113400.csv
+SQL MY999952 : 1
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN22_Temperature_23062020_102127 - Copy - Copy.csv-113400.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN22_Temperature_23062020_102127 - Copy.csv-113400.csv
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN22_Temperature_23062020_102127.csv-113400.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+isWrite OPCUA  MY999952 0
+Connect 124.158.10.133:4840 successfully
+================================================================================
+Start-------> 2020-06-29-11:34:15
+================================================================================
+Start-------> 2020-06-29-11:34:20
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (2) - Copy - Copy.csv-113415.csv
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (2) - Copy.csv-113415.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (2).csv-113415.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (3) - Copy.csv-113415.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (3).csv-113415.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (4) - Copy.csv-113415.csv
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (4).csv-113415.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy - Copy (2).csv-113415.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy - Copy - Copy (2).csv-113415.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy - Copy - Copy.csv-113415.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy - Copy.csv-113415.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy.csv-113415.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127.csv-113415.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102128.csv-113415.csv
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102227.csv-113415.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (2) - Copy - Copy.csv-113415.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (2) - Copy.csv-113415.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (2).csv-113415.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (3) - Copy.csv-113415.csv
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+Connect 124.158.10.133:4840 successfully
+================================================================================
+Start-------> 2020-06-29-11:34:26
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (3).csv-113415.csv
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (4).csv-113415.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy (2) - Copy.csv-113415.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy (2).csv-113415.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy (3).csv-113415.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy - Copy (2).csv-113415.csv
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy - Copy - Copy.csv-113415.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy - Copy.csv-113415.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy.csv-113415.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy.csv-113415.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127.csv-113415.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_127127.csv-113415.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_26062020_102127.csv-113415.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN22_Temperature_23062020_102127 - Copy (2) - Copy - Copy.csv-113415.csv
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN22_Temperature_23062020_102127 - Copy (2) - Copy.csv-113415.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN22_Temperature_23062020_102127 - Copy (2).csv-113415.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN22_Temperature_23062020_102127 - Copy (3) - Copy.csv-113415.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN22_Temperature_23062020_102127 - Copy (3).csv-113415.csv
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN22_Temperature_23062020_102127 - Copy (4) - Copy.csv-113415.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+isWrite OPCUA  MY999952 0
+================================================================================
+Start-------> 2020-06-29-11:34:31
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (2) - Copy - Copy.csv-113431.csv
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (2) - Copy.csv-113431.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (2).csv-113431.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (3) - Copy.csv-113431.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (3).csv-113431.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (4) - Copy.csv-113431.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (4).csv-113431.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+Connect 124.158.10.133:4840 successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy - Copy (2).csv-113431.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy - Copy - Copy (2).csv-113431.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy - Copy - Copy.csv-113431.csv
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy - Copy.csv-113431.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy.csv-113431.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127.csv-113431.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102128.csv-113431.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102227.csv-113431.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (2) - Copy - Copy.csv-113431.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (2) - Copy.csv-113431.csv
+isWrite OPCUA  MY999952 0
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (2).csv-113431.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (3) - Copy.csv-113431.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+isWrite OPCUA  MY999952 0
+================================================================================
+Start-------> 2020-06-29-11:34:36
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (3).csv-113431.csv
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (4).csv-113431.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy (2) - Copy.csv-113431.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy (2).csv-113431.csv
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy (3).csv-113431.csv
+isWrite OPCUA  MY999952 0
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy - Copy (2).csv-113431.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy - Copy - Copy.csv-113431.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy - Copy.csv-113431.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy.csv-113431.csv
+isWrite OPCUA  MY999952 0
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy.csv-113431.csv
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+================================================================================
+================================================================================
+Connect 124.158.10.133:4840 successfully
+================================================================================
+Start-------> 2020-06-29-11:34:59
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy.csv-113431.csv
+Start-------> 2020-06-29-11:34:59
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy.csv-113431.csv
+================================================================================
+Start-------> 2020-06-29-11:35:06
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (2) - Copy - Copy.csv-113446.csv
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (2) - Copy.csv-113458.csv
+SQL MY999952 : 1
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (2).csv-113458.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (3) - Copy.csv-113459.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (3).csv-113459.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (4) - Copy.csv-113459.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (4).csv-113459.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy - Copy (2).csv-113459.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy - Copy - Copy (2).csv-113459.csv
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy - Copy - Copy.csv-113459.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy - Copy.csv-113459.csv
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy.csv-113459.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127.csv-113459.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102128.csv-113459.csv
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102227.csv-113459.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (2) - Copy - Copy.csv-113459.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (2) - Copy.csv-113459.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (2).csv-113459.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (3) - Copy.csv-113459.csv
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+================================================================================
+Start-------> 2020-06-29-11:35:11
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (3).csv-113459.csv
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (4).csv-113459.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy (2) - Copy.csv-113459.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy (2).csv-113459.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy (3).csv-113459.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy - Copy (2).csv-113459.csv
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy - Copy - Copy.csv-113459.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy - Copy.csv-113459.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy.csv-113459.csv
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy.csv-113431.csv
+================================================================================
+Start-------> 2020-06-29-11:35:19
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (2) - Copy - Copy.csv-113515.csv
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (2) - Copy.csv-113515.csv
+SQL MY999952 : 1
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (2).csv-113515.csv
+Export CSV MY999952 file processed successfully
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (3) - Copy.csv-113515.csv
+SQL MY999952 : 1
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (3).csv-113515.csv
+Export CSV MY999952 file processed successfully
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (4) - Copy.csv-113515.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy (4).csv-113515.csv
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy - Copy (2).csv-113515.csv
+SQL MY999952 : 1
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy - Copy - Copy (2).csv-113515.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy - Copy - Copy.csv-113515.csv
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+isWrite OPCUA  MY999952 0
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy - Copy.csv-113515.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127 - Copy.csv-113515.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102127.csv-113515.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102128.csv-113515.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_102227.csv-113515.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (2) - Copy - Copy.csv-113515.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (2) - Copy.csv-113515.csv
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (2).csv-113515.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (3) - Copy.csv-113516.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+================================================================================
+Start-------> 2020-06-29-11:35:24
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (3).csv-113516.csv
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy (4).csv-113516.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy (2) - Copy.csv-113516.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy (2).csv-113516.csv
+isWrite OPCUA  MY999952 0
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy (3).csv-113516.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy - Copy (2).csv-113516.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy - Copy - Copy.csv-113516.csv
+Export CSV MY999952 file processed successfully
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy - Copy.csv-113516.csv
+SQL MY999952 : 1
+isWrite OPCUA  MY999952 0
+Export CSV MY999952 file processed successfully
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy.csv-113459.csv
+SQL MY999952 : 1
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy - Copy.csv-113516.csv
+Export CSV MY999952 file processed successfully
+isWrite OPCUA  MY999952 0
+SQL MY999952 : 1
+File name: 7 - MY999952_124.158.10.133_4840_PT-GN21_Temperature_23062020_122127 - Copy.csv-113431.csv

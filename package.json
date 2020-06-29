@@ -13,6 +13,7 @@
     "dateformat": "^3.0.3",
     "dotenv": "^8.2.0",
     "export-to-csv": "^0.2.1",
+    "log-to-file": "^2.0.2",
     "mkdirp": "^1.0.4",
     "moment": "^2.26.0",
     "mongoose": "^5.9.19",
