@@ -1,4 +1,4 @@
-CREATE TRIGGER trg_CHECK_DUPLICATE1 on dbo.DataLogger5 after insert AS
+CREATE TRIGGER trg_CHECK_DUPLICATE1 on dbo.Datalogger5 after insert AS
 BEGIN
    WITH acte AS (
     SELECT 
@@ -16,9 +16,12 @@ BEGIN
         ) row_num
      FROM 
         DataLogger5
-	)
-	DELETE FROM acte
-	WHERE row_num > 1;
+    WHERE  time_stamp < DATEADD(day, 1, GETDATE())
+       AND time_stamp > DATEADD(day, -1, GETDATE())
+
+       )
+    DELETE FROM acte
+    WHERE row_num > 1;
 
 
 end

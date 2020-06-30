@@ -70,14 +70,11 @@ async function run(){
       //console.log(allSites)
     })
 
-  setInterval(function() {
-    strLogPath = logFolder + '\\' + moment(new Date()).format("YYYYMMDD");
-    mkdirp.sync(strLogPath);
-  },10*60*60*1000)
+  
 
 	setInterval(async function(){
     strLogPath = logFolder + '\\' + moment(new Date()).format("YYYYMMDD");
-    deleteDuplicateData('Datalogger5')
+    //deleteDuplicateData('Datalogger5')
   	readFilesFromFlexy();
       //checkConnection()
     	//await writeAckOPCUA()
@@ -93,6 +90,11 @@ async function run(){
   setInterval(async function(){
     checkConnection()
   }, CHECK_CONNECT_TIME);
+
+  setInterval(function() {
+    strLogPath = logFolder + '\\' + moment(new Date()).format("YYYYMMDD");
+    mkdirp.sync(strLogPath);
+  },10*60*60*1000)
 }
 run();
 
@@ -215,7 +217,7 @@ async function readFilesFromFlexy(){
               }else{
                 let sts = await SaveDataToSQLServer(arrData)
                 //console.log('SQL', site_id,':',sts)
-                log('SQL saved ' + site_id +': ' + sts, strLogPath + '\\log.txt');
+                log('SQL saved ' + site_id + '- ' + tagname + ': ' + sts, strLogPath + '\\log.txt');
                 await delay(50);
 
                 await exportToCSVFile(site_id, tagname, arrExportData)                  
@@ -251,6 +253,7 @@ async function readFilesFromFlexy(){
                 //console.log('isWrite OPCUA ', site[0].site_id,  site[0].isWrite)
 
                 if (site[0].isWrite) {
+                  log('Write ack ' + site_id + ' ' + ackTag, strLogPath + '\\log.txt');
                   sendAckToFlexy(site_id, ackTag, ip, port);
                 }
                 
@@ -268,7 +271,7 @@ async function readFilesFromFlexy(){
 
 async function sendAckToFlexy(site_id, ackTag, ip, port){
   let OPCUAstatus = await writeAckOPCUA(site_id, ackTag, ip, port);
-  console.log('OPC UA', site_id,' ', ackTag + ':',OPCUAstatus)
+  //console.log('OPC UA', site_id,' ', ackTag + ':',OPCUAstatus)
   log('OPC UA '+ site_id + '' + ackTag + ':' + OPCUAstatus, strLogPath + '\\log.txt');
 }
 
