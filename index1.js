@@ -6,13 +6,13 @@ const fs = require('fs');
 const csv = require('csv-parser');
 const moment = require('moment');
 const stripBom = require('strip-bom-stream');
-var sql = require("mssql");
+const sql = require("mssql");
 const sqlConfig = require('./config/sql.js')
 const dateFormat = require('dateformat');
 const ExportToCsv = require('export-to-csv').ExportToCsv;
 const mkdirp = require('mkdirp');
 const rimraf = require("rimraf");
-const log = require('log-to-file');
+//const log = require('log-to-file');
 
 const  { 
   OPCUAClient,
@@ -23,7 +23,6 @@ const  {
   TimestampsToReturn
  } = require("node-opcua-client");
 const opcua = require("node-opcua");
-
 
 const delay = (amount = number) => {
   return new Promise((resolve) => {
@@ -39,12 +38,14 @@ const SQL_TABLE_STATUS = process.env.SQL_TABLE_STATUS;
 const isMoveFile = parseInt(process.env.IS_MOVE_FILE)
 const PROCESS_TIME = parseInt(process.env.PROCESS_TIME)*1000;
 const REMOVE_TIME = parseInt(process.env.REMOVE_TIME)*1000;
-const PROCESSED_STORE = parseInt(process.env.PROCESSED_STORE)*1000;
 const CHECK_CONNECT_TIME = parseInt(process.env.CHECK_CONNECT_TIME)*1000;
+
 const BACKUP_SQL_DAY = parseInt(process.env.BACKUP_SQL_DAY);
+const PROCESSED_STORE = parseInt(process.env.PROCESSED_STORE);
+
 const directoryPath = process.env.CSV_FLEXY_PATH;
 const inprogressFolder = directoryPath + '\\Inprogress';
-const logFolder = directoryPath + '\\Log';
+const logFolder = directoryPath + '\\Log\\';
 
 //*******************************************
 // Global variable
@@ -53,10 +54,20 @@ const logFolder = directoryPath + '\\Log';
 //*****************
 //joining path of directory
 let allSites = []
-let strLogPath = logFolder + '\\' + moment(new Date()).format("YYYYMMDD");
-mkdirp.sync(strLogPath);
+mkdirp.sync(logFolder);
+
+const opts = {
+    // errorEventName:'error',
+        logDirectory:logFolder, // NOTE: folder must exist and be writable...
+        fileNamePattern:'log-<DATE>.log',
+        dateFormat:'YYYY.MM.DD HH'
+};
+const log = require('simple-node-logger').createRollingFileLogger( opts );
 
 async function run(){
+  setInterval(function() {
+  },2*1000)
+
   fs.createReadStream('./config/site_information.txt')
     .on('error', () => {
       console.log('Stream file error')
@@ -92,10 +103,7 @@ async function run(){
     checkConnection()
   }, CHECK_CONNECT_TIME);
 
-  setInterval(function() {
-    strLogPath = logFolder + '\\' + moment(new Date()).format("YYYYMMDD");
-    mkdirp.sync(strLogPath);
-  },10*60*60*1000)
+  
 }
 run();
 
@@ -112,9 +120,8 @@ async function readFilesFromFlexy(){
 	    return console.log('Unable to scan directory: ' + err);
 	  }
 	  let count = 0;
-    //console.log('Start-------> ' + moment(new Date()).format("YYYY-MM-DD-HH:mm:ss"))
-    log('Start-------> ' + moment(new Date()).format("YYYY-MM-DD-HH:mm:ss"), strLogPath + '\\log.txt');
-
+    //log('Start -------> ' + , strLogFile );
+    log.info('Read file at ', moment().format("YYYY-MM-DD HH:mm:ss"))
     //Calc to Write OPC UA
     allSites.forEach(function(site){              
       let result = filterItems(files, site.ip)    // ['apple', 'grapes']
@@ -145,20 +152,32 @@ async function readFilesFromFlexy(){
         // Do whatever you want to do with the file
         let arrInfo = file.split("_")
         console.log('File name: ' +arrInfo.length + ' - ' + file);
+        log.info('Read file: (' +arrInfo.length + ')-' + file);
+
         let currentPath = inprogressFolder + '\\' + file;
         
         let processedPath = directoryPath + '\\Processed';
         let errPath = directoryPath + '\\Errors\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file;
 
-        if (arrInfo.length !== 7) {
+        if (arrInfo.length !== 7) { 
         	//console.log('Err! Data format in correct')
-          log('Err! Data format in correct', strLogPath + '\\log.txt');
+          //log('', strLogPath + '\\log.txt');
+          try{
+            log.error('CSV from Flexy - file format is incorrect lenght. Length = ' + arrInfo.length)
+            log.error('File name: ' + file) 
+          }catch(err){
+            console.log(err.message)
+          }
+          
+          //log.error('File name: ' + file)
+
           try{
             fs.copyFileSync(currentPath, errPath);
             fs.unlinkSync(currentPath)
           }catch(err){
             //console.log('Move bank file err ' + err.message)
-            log('Move bank file err ' + err.message, strLogPath + '\\log.txt');
+            //log('Move bank file err ' + err.message, strLogPath + '\\log.txt');
+            log.error('Move file to Error folder.' + err.message)
           }
         }else{
         	let site_id = arrInfo[0];
@@ -168,9 +187,9 @@ async function readFilesFromFlexy(){
           let ackTag = arrInfo[4];
 
         	fs.createReadStream(currentPath)
-            .on('error', () => {
+            .on('error', (err) => {
               //console.log('Stream file error')
-              log('Stream file error ', strLogPath + '\\log.txt');
+              log.error('Stream file error ' + err.message);
             })
   				  .pipe(csv({separator:';'}))
   				  .on('data', (data_row) => {
@@ -193,16 +212,13 @@ async function readFilesFromFlexy(){
                 arrExportData.push(jsonExportData)
               }catch (err){
                 //console.log('Error file when stream ' + err.message)
-                log('Error file when stream ' + err.message, strLogPath + '\\log.txt');
+                log.warn('Error file when stream ' + err.message);
+                log.warn('File: ' + file)
               }
-  				  	//console.log('-----------------------------------')
-  				  	// if (typeof(data_row) == 'Object') {
-  				  	// 	console.log('object.....')
-  				  	// }
+  				  	
   				  	
   				  })
   				  .on('end', async function(){
-              //console.log(arrData)
               if (arrData.length == 0) {
                 try{
                   if( fs.existsSync(currentPath) ){
@@ -212,21 +228,21 @@ async function readFilesFromFlexy(){
                   }
                 }catch(err){
                   //console.log('Move bank file err ' + err.message)
-                  log('Move bank file err ' + err.message, strLogPath + '\\log.txt');
+                  log.error('Move blank file to error folder has error' + err.message);
                 }
                 
               }else{
                 let sts = await SaveDataToSQLServer(arrData)
                 //console.log('SQL', site_id,':',sts)
-                log('SQL saved ' + site_id + '- ' + tagname + ': ' + sts, strLogPath + '\\log.txt');
+                log.info('SQL saved ' + site_id + '- ' + tagname + ': ' + sts);
                 await delay(50);
 
                 await exportToCSVFile(site_id, tagname, arrExportData)                  
                 //console.log('Export CSV ' + site_id + ' file processed successfully');
-                log('Export CSV ' + site_id + ' ' + tagname + ' file processed successfully', strLogPath + '\\log.txt');
+                //log('Export CSV ' + site_id + ' ' + tagname + ' file processed successfully', strLogPath + '\\log.txt');
                 if (isMoveFile) {
                   let _strPath_Date = processedPath + '\\' + moment().format("YYYY_MM_DD")
-                  let strPathFile = _strPath_Date + '\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file
+                  let strPathFile = _strPath_Date + '\\' + moment().format("YYYYMMDD-HHmmss") + '_' + file
 
                   const folderDate = mkdirp.sync(_strPath_Date);
                   try{
@@ -238,7 +254,8 @@ async function readFilesFromFlexy(){
                     
                   }catch(err){
                     //console.log('Move processed file err ' + err.message)
-                    log('Move processed file err ' + err.message, strLogPath + '\\log.txt');
+                    //log('Move processed file err ' + err.message, strLogPath + '\\log.txt');
+                    log.error('Move processed file to Processed folder has error' + err.message);
                   }
                   
                 }
@@ -254,7 +271,7 @@ async function readFilesFromFlexy(){
                 //console.log('isWrite OPCUA ', site[0].site_id,  site[0].isWrite)
 
                 if (site[0].isWrite) {
-                  log('Write ack ' + site_id + ' ' + ackTag, strLogPath + '\\log.txt');
+                  log.info(site_id + ' write ack to Flexy ' + ackTag);
                   sendAckToFlexy(site_id, ackTag, ip, port);
                 }
                 
@@ -273,7 +290,7 @@ async function readFilesFromFlexy(){
 async function sendAckToFlexy(site_id, ackTag, ip, port){
   let OPCUAstatus = await writeAckOPCUA(site_id, ackTag, ip, port);
   //console.log('OPC UA', site_id,' ', ackTag + ':',OPCUAstatus)
-  log('OPC UA '+ site_id + '' + ackTag + ':' + OPCUAstatus, strLogPath + '\\log.txt');
+  log.info(site_id + ' send ack ' + ackTag + ' to flexy by OPC UA ', OPCUAstatus);
 }
 
 async function SaveDataToSQLServer(arrData){
@@ -421,11 +438,13 @@ async function writeAckOPCUA(site_id, tagname, ip, port){
       //readOPCUA1();
   } catch (err) {
       console.log("OPC UA Error ", err.message);
+      log.error('OPC UA error when write ack to flexy ' + err.message)
       return 0
   }
 };
 
 function deleteProcessedFolder(days, path){
+  
   let beforeNdays = moment().subtract(days + 5, 'days');
   let processedPath = path + '\\Processed';
 
@@ -437,7 +456,10 @@ function deleteProcessedFolder(days, path){
 
     if (fs.existsSync(strFolderPath)) {
       rimraf.sync(strFolderPath);
+      log.warn('Deleted folder ' + folderName + ' in ' + strFolderPath)
     }
+
+    
   }
 }
 
@@ -500,7 +522,7 @@ async function readOPCUA(site_id, ip, port, username, password){
     await session.close();
     await client.disconnect();
     //console.log('Connect ' + ip + ':' + port + ' successfully');
-    log('Connect ' + ip + ':' + port + ' successfully', strLogPath + '\\log.txt');
+    log.info('Connected to ' + ip + ':' + port + ' successfully');
     writeConnectionToCSV(site_id, 1)
     saveConnectionStatus(site_id, 1)
 
@@ -539,7 +561,8 @@ function saveConnectionStatus(site_id, is_connect){
 }
 
 async function writeConnectionToCSV(site_id, value){
-  let jsonConnectExportData = [
+  if (parseInt(process.env.IS_EXPORT_TO_CSV) == 1) {
+    let jsonConnectExportData = [
     {
       TimeStamp: 'TimeStamp',
       Tagname: 'Tagname',
@@ -550,9 +573,9 @@ async function writeConnectionToCSV(site_id, value){
       Tagname: site_id + ':METTUBE.'+ 'CONNECTION',
       Value: value,
     }]
-  //console.log(jsonConnectExportData)
-  await exportToCSVFile(site_id, 'CONNECTION', jsonConnectExportData)
-  
+    //console.log(jsonConnectExportData)
+    await exportToCSVFile(site_id, 'CONNECTION', jsonConnectExportData)
+  }
 }
 
 
@@ -580,8 +603,8 @@ function deleteDuplicateData(tableName){
                                     datavalue
                             ) row_num
                          FROM ` + tableName + `
-                      WHERE  time_stamp < DATEADD(day, 1, GETDATE())
-                           AND time_stamp > DATEADD(day, -20, GETDATE())
+                      WHERE  time_stamp < DATEADD(HOUR, 1, GETDATE())
+                           AND time_stamp > DATEADD(HOUR, -3, GETDATE())
                          )
                       DELETE FROM acte
                       WHERE row_num > 1;
@@ -592,6 +615,7 @@ function deleteDuplicateData(tableName){
     }
   })
   sql.on('error', err => {
-    console.log('SQL has issue when trigger data ', err.message )
+    //console.log(' )
+    log.error('SQL has error when trigger delete duplicate data ', err.message)
   })
 }
