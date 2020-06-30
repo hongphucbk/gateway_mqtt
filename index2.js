@@ -74,9 +74,8 @@ async function run(){
 
 	setInterval(async function(){
     strLogPath = logFolder + '\\' + moment(new Date()).format("YYYYMMDD");
-    
-  	readFilesFromFlexy();
-    // deleteDuplicateData(strSQLTableName)
+      deleteDuplicateData('Datalogger5')
+  	//readFilesFromFlexy();
       //checkConnection()
     	//await writeAckOPCUA()
   	console.log('================================================================================')
@@ -298,7 +297,6 @@ async function SaveDataToSQLServer(arrData){
       						.query(strQuery)
         
     //console.log(result1)
-    deleteDuplicateData(strSQLTableName)
     return 1;
 	} catch (err) {
     //console.log("SQL Error " + err)
@@ -538,6 +536,7 @@ function saveConnectionStatus(site_id, is_connect){
   })
 }
 
+
 async function writeConnectionToCSV(site_id, value){
   let jsonConnectExportData = [
     {
@@ -565,6 +564,11 @@ function deleteDuplicateData(tableName){
     else
     {
       var request = new sql.Request();
+      let before10days = moment().subtract(BACKUP_SQL_DAY, 'days');
+      let beforeday = new Date(before10days)
+      //console.log('data', beforeday)
+      request.input('beforeday', sql.DateTimeOffset, beforeday);
+
       let strQuery = `WITH acte AS (
                         SELECT 
                             *, 
@@ -579,19 +583,22 @@ function deleteDuplicateData(tableName){
                                     tagname, 
                                     datavalue
                             ) row_num
-                         FROM ` + tableName + `
+                         FROM 
+                            DataLogger5
                       WHERE  time_stamp < DATEADD(day, 1, GETDATE())
-                           AND time_stamp > DATEADD(day, -20, GETDATE())
+                           AND time_stamp > DATEADD(day, -1, GETDATE())
+
                          )
                       DELETE FROM acte
                       WHERE row_num > 1;
                       `
+
       request.query(strQuery, function(err, recordsets) {  
         if (err) console.log(err); 
       });
     }
   })
   sql.on('error', err => {
-    console.log('SQL has issue when trigger data ', err.message )
+    console.log('SQL has issue when delete data ', err )
   })
 }

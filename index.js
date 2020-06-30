@@ -70,18 +70,15 @@ async function run(){
       //console.log(allSites)
     })
 
-  setInterval(function() {
-    strLogPath = logFolder + '\\' + moment(new Date()).format("YYYYMMDD");
-    mkdirp.sync(strLogPath);
-  },10*60*60*1000)
+  
 
   setInterval(async function(){
     strLogPath = logFolder + '\\' + moment(new Date()).format("YYYYMMDD");
     
-
     readFilesFromFlexy();
-    //checkConnection()
-    //await writeAckOPCUA()
+    // deleteDuplicateData(strSQLTableName)
+      //checkConnection()
+      //await writeAckOPCUA()
     console.log('================================================================================')
   }, PROCESS_TIME);
 
@@ -94,6 +91,11 @@ async function run(){
   setInterval(async function(){
     checkConnection()
   }, CHECK_CONNECT_TIME);
+
+  setInterval(function() {
+    strLogPath = logFolder + '\\' + moment(new Date()).format("YYYYMMDD");
+    mkdirp.sync(strLogPath);
+  },10*60*60*1000)
 }
 run();
 
@@ -216,7 +218,7 @@ async function readFilesFromFlexy(){
               }else{
                 let sts = await SaveDataToSQLServer(arrData)
                 //console.log('SQL', site_id,':',sts)
-                log('SQL saved ' + site_id +': ' + sts, strLogPath + '\\log.txt');
+                log('SQL saved ' + site_id + '- ' + tagname + ': ' + sts, strLogPath + '\\log.txt');
                 await delay(50);
 
                 await exportToCSVFile(site_id, tagname, arrExportData)                  
@@ -252,6 +254,7 @@ async function readFilesFromFlexy(){
                 //console.log('isWrite OPCUA ', site[0].site_id,  site[0].isWrite)
 
                 if (site[0].isWrite) {
+                  log('Write ack ' + site_id + ' ' + ackTag, strLogPath + '\\log.txt');
                   sendAckToFlexy(site_id, ackTag, ip, port);
                 }
                 
@@ -269,7 +272,7 @@ async function readFilesFromFlexy(){
 
 async function sendAckToFlexy(site_id, ackTag, ip, port){
   let OPCUAstatus = await writeAckOPCUA(site_id, ackTag, ip, port);
-  console.log('OPC UA', site_id,' ', ackTag + ':',OPCUAstatus)
+  //console.log('OPC UA', site_id,' ', ackTag + ':',OPCUAstatus)
   log('OPC UA '+ site_id + '' + ackTag + ':' + OPCUAstatus, strLogPath + '\\log.txt');
 }
 
@@ -295,6 +298,7 @@ async function SaveDataToSQLServer(arrData){
                   .query(strQuery)
         
     //console.log(result1)
+    deleteDuplicateData(strSQLTableName)
     return 1;
   } catch (err) {
     //console.log("SQL Error " + err)
@@ -534,7 +538,6 @@ function saveConnectionStatus(site_id, is_connect){
   })
 }
 
-
 async function writeConnectionToCSV(site_id, value){
   let jsonConnectExportData = [
     {
@@ -553,3 +556,42 @@ async function writeConnectionToCSV(site_id, value){
 }
 
 
+function deleteDuplicateData(tableName){
+  // connect to your database
+  sql.connect(sqlConfig, function (err) {
+    if (err){
+      console.log(err);
+    } 
+    else
+    {
+      var request = new sql.Request();
+      let strQuery = `WITH acte AS (
+                        SELECT 
+                            *, 
+                            ROW_NUMBER() OVER (
+                                PARTITION BY 
+                                    site_id, 
+                                    tagname, 
+                                    datavalue,
+                                    time_stamp
+                                ORDER BY 
+                                    site_id, 
+                                    tagname, 
+                                    datavalue
+                            ) row_num
+                         FROM ` + tableName + `
+                      WHERE  time_stamp < DATEADD(day, 1, GETDATE())
+                           AND time_stamp > DATEADD(day, -20, GETDATE())
+                         )
+                      DELETE FROM acte
+                      WHERE row_num > 1;
+                      `
+      request.query(strQuery, function(err, recordsets) {  
+        if (err) console.log(err); 
+      });
+    }
+  })
+  sql.on('error', err => {
+    console.log('SQL has issue when trigger data ', err.message )
+  })
+}
