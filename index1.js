@@ -77,11 +77,10 @@ async function run(){
 
 	setInterval(async function(){
     strLogPath = logFolder + '\\' + moment(new Date()).format("YYYYMMDD");
-    
-
+    deleteDuplicateData('Datalogger5')
   	readFilesFromFlexy();
-    //checkConnection()
-  	//await writeAckOPCUA()
+      //checkConnection()
+    	//await writeAckOPCUA()
   	console.log('================================================================================')
   }, PROCESS_TIME);
 
@@ -553,3 +552,26 @@ async function writeConnectionToCSV(site_id, value){
 }
 
 
+function deleteDuplicateData(tableName){
+  // connect to your database
+  sql.connect(sqlConfig, function (err) {
+    if (err){
+      console.log(err);
+    } 
+    else
+    {
+      var request = new sql.Request();
+      let before10days = moment().subtract(BACKUP_SQL_DAY, 'days');
+      let beforeday = new Date(before10days)
+      //console.log('data', beforeday)
+      request.input('beforeday', sql.DateTimeOffset, beforeday);
+
+      request.query('DELETE FROM ' + tableName + ' WHERE created_at < @beforeday', function(err, recordsets) {  
+        if (err) console.log(err); 
+      });
+    }
+  })
+  sql.on('error', err => {
+    console.log('SQL has issue when delete data ', err )
+  })
+}

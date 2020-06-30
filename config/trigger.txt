@@ -1,0 +1,23 @@
+CREATE TRIGGER trg_CHECK_DUPLICATE1 on dbo.DataLogger5 after insert AS
+BEGIN
+   WITH acte AS (
+    SELECT 
+        *, 
+        ROW_NUMBER() OVER (
+            PARTITION BY 
+                site_id, 
+                tagname, 
+                datavalue
+            ORDER BY 
+                site_id, 
+                tagname, 
+                datavalue
+        ) row_num
+     FROM 
+        DataLogger5
+	)
+	DELETE FROM acte
+	WHERE row_num > 1;
+
+
+end
