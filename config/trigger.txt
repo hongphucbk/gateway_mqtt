@@ -7,7 +7,8 @@ BEGIN
             PARTITION BY 
                 site_id, 
                 tagname, 
-                datavalue
+                datavalue,
+                time_stamp
             ORDER BY 
                 site_id, 
                 tagname, 
