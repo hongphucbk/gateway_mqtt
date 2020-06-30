@@ -581,7 +581,7 @@ function deleteDuplicateData(tableName){
                             ) row_num
                          FROM ` + tableName + `
                       WHERE  time_stamp < DATEADD(day, 1, GETDATE())
-                           AND time_stamp > DATEADD(day, -20, GETDATE())
+                           AND time_stamp > DATEADD(day, -1, GETDATE())
                          )
                       DELETE FROM acte
                       WHERE row_num > 1;
