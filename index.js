@@ -80,9 +80,7 @@ async function run(){
     .on('end', async function(){
       //console.log(allSites)
     })
-
   
-
   setInterval(async function(){
     strLogPath = logFolder + '\\' + moment(new Date()).format("YYYYMMDD");
     
