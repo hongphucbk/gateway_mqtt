@@ -237,9 +237,10 @@ async function readFilesFromFlexy(){
                 log.info('SQL saved ' + site_id + '- ' + tagname + ': ' + sts);
                 await delay(50);
 
-                await exportToCSVFile(site_id, tagname, arrExportData)                  
-                //console.log('Export CSV ' + site_id + ' file processed successfully');
-                //log('Export CSV ' + site_id + ' ' + tagname + ' file processed successfully', strLogPath + '\\log.txt');
+                if (process.env.IS_EXPORT_TO_CSV == 1) {
+                  await exportToCSVFile(site_id, tagname, arrExportData)                  
+                  log.info('Export CSV ' + site_id + ' ' + tagname + ' file processed successfully');
+                }
                 if (isMoveFile) {
                   let _strPath_Date = processedPath + '\\' + moment().format("YYYY_MM_DD")
                   let strPathFile = _strPath_Date + '\\' + moment().format("YYYYMMDD-HHmmss") + '_' + file
