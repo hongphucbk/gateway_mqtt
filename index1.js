@@ -138,8 +138,16 @@ async function readFilesFromFlexy(){
 	  // await files.forEach(async function (file) {
     for(let i = 0; i < files.length; i++){
       let file = files[i];
+      let currentPath = inprogressFolder + '\\' + file;
+      let processedPath = directoryPath + '\\Processed';
+      let errPath = directoryPath + '\\Errors\\' + moment().format("YYYYMMDD-HHmmss") + '_' + file;
+
+      let file_infor = fs.statSync(currentPath)
+      let fileSizeInBytes = file_infor["size"]
+      //console.log(fileSizeInBytes, typeof(fileSizeInBytes))
+
 	  	count = count +1;
-	  	if (count < process.env.PROCESS_FILE) {
+	  	if (count < process.env.PROCESS_FILE && fileSizeInBytes > 0) {
   	  	let arrData = []
   	  	let arrExportData = [
           {
@@ -152,16 +160,9 @@ async function readFilesFromFlexy(){
         // Do whatever you want to do with the file
         let arrInfo = file.split("_")
         console.log('File name: ' +arrInfo.length + ' - ' + file);
-        log.info('Read file: (' +arrInfo.length + ')-' + file);
-
-        let currentPath = inprogressFolder + '\\' + file;
-        
-        let processedPath = directoryPath + '\\Processed';
-        let errPath = directoryPath + '\\Errors\\' + moment(new Date()).format("YYYYMMDD-HHmmss") + '_' + file;
+        log.info('Read file name: (' +arrInfo.length + ')-' + file + '- ' + fileSizeInBytes + ' bytes');
 
         if (arrInfo.length !== 7) { 
-        	//console.log('Err! Data format in correct')
-          //log('', strLogPath + '\\log.txt');
           try{
             log.error('CSV from Flexy - file format is incorrect lenght. Length = ' + arrInfo.length)
             log.error('File name: ' + file) 
@@ -180,6 +181,8 @@ async function readFilesFromFlexy(){
             log.error('Move file to Error folder.' + err.message)
           }
         }else{
+
+
         	let site_id = arrInfo[0];
         	let ip = arrInfo[1];
         	let port = parseInt(arrInfo[2]);
@@ -494,7 +497,7 @@ async function readOPCUA(site_id, ip, port, username, password){
     });
 
     client.on("connection_lost", () => {
-      console.log("Connection lost");
+      log.warn("OPC UA Connection lost");
       saveConnectionStatus(site_id, 0)
       writeConnectionToCSV(site_id, 0)
     });
@@ -523,12 +526,12 @@ async function readOPCUA(site_id, ip, port, username, password){
     await session.close();
     await client.disconnect();
     //console.log('Connect ' + ip + ':' + port + ' successfully');
-    log.info('Connected to ' + ip + ':' + port + ' successfully');
+    log.info('OPC UA connected to ' + ip + ':' + port + ' successfully');
     writeConnectionToCSV(site_id, 1)
     saveConnectionStatus(site_id, 1)
 
   } catch (err) {
-      console.log("Connect Error", err.message);
+      log.error("OPC UA connect has error: ", err.message);
       writeConnectionToCSV(site_id, 0)
       saveConnectionStatus(site_id, 0)
 
@@ -536,29 +539,38 @@ async function readOPCUA(site_id, ip, port, username, password){
 }
 
 function saveConnectionStatus(site_id, is_connect){
-  // connect to your database
-  sql.connect(sqlConfig, function (err) {
-    if (err){
-      console.log(err);
-    } 
-    else
-    {
-      var request = new sql.Request();
-      request.input('site_id', sql.VarChar, site_id);
-      request.input('is_connect', sql.Bit, is_connect );
-      request.input('created_at', sql.DateTimeOffset, new Date());
+    let TempData = [{
+                site_id : site_id,
+                timestamp: new Date(), //(data_row.TimeStr),
+                tagname: 'COMMUNICATION',
+                value: parseFloat(is_connect),
+                created_at: new Date(),
+              }]
+    SaveDataToSQLServer(TempData)
 
-      let strQuery = 'INSERT INTO '+ process.env.SQL_TABLE_STATUS 
-                   + ' (site_id, is_connect, created_at) '
-                   + ' VALUES (@site_id, @is_connect, @created_at)'
-      request.query(strQuery, function(err, recordsets) {  
-        if (err) console.log(err); 
-        //console.log(recordsets)
-        //sql.close()
-      });
+  // connect to your database
+  // sql.connect(sqlConfig, function (err) {
+  //   if (err){
+  //     console.log(err);
+  //   } 
+  //   else
+  //   {
+  //     var request = new sql.Request();
+  //     request.input('site_id', sql.VarChar, site_id);
+  //     request.input('is_connect', sql.Bit, is_connect );
+  //     request.input('created_at', sql.DateTimeOffset, new Date());
+
+  //     let strQuery = 'INSERT INTO '+ process.env.SQL_TABLE_STATUS 
+  //                  + ' (site_id, is_connect, created_at) '
+  //                  + ' VALUES (@site_id, @is_connect, @created_at)'
+  //     request.query(strQuery, function(err, recordsets) {  
+  //       if (err) console.log(err); 
+  //       //console.log(recordsets)
+  //       //sql.close()
+  //     });
    
-    }
-  })
+  //   }
+  // })
 }
 
 async function writeConnectionToCSV(site_id, value){
@@ -571,11 +583,11 @@ async function writeConnectionToCSV(site_id, value){
     },
     {
       TimeStamp: dateFormat(new Date(), "mm/dd/yyyy HH:MM"),
-      Tagname: site_id + ':METTUBE.'+ 'CONNECTION',
+      Tagname: site_id + ':METTUBE.'+ 'COMMUNICATION',
       Value: value,
     }]
     //console.log(jsonConnectExportData)
-    await exportToCSVFile(site_id, 'CONNECTION', jsonConnectExportData)
+    await exportToCSVFile(site_id, 'COMMUNICATION', jsonConnectExportData)
   }
 }
 
