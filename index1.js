@@ -33,10 +33,12 @@ const delay = (amount = number) => {
 require('events').EventEmitter.defaultMaxListeners = 200;
 
 const strSQLTableName = process.env.SQL_TABLE_NAME;
-const SQL_TABLE_STATUS = process.env.SQL_TABLE_STATUS;
 
 const isMoveFile = parseInt(process.env.IS_MOVE_FILE)
 const PROCESS_TIME = parseInt(process.env.PROCESS_TIME)*1000;
+const BACKFILL_PROCESS_TIME = parseInt(process.env.BACKFILL_PROCESS_TIME)*1000;
+
+
 const REMOVE_TIME = parseInt(process.env.REMOVE_TIME)*1000;
 const CHECK_CONNECT_TIME = parseInt(process.env.CHECK_CONNECT_TIME)*1000;
 
@@ -45,16 +47,12 @@ const PROCESSED_STORE = parseInt(process.env.PROCESSED_STORE);
 
 const directoryPath = process.env.CSV_FLEXY_PATH;
 const inprogressFolder = directoryPath + '\\Inprogress';
+const processedPath = directoryPath + '\\Processed';
 const logFolder = directoryPath + '\\Log\\';
-
-//*******************************************
-// Global variable
-
-
-//*****************
-//joining path of directory
-let allSites = []
 mkdirp.sync(logFolder);
+//********************************************************************************
+// Global variable
+let arrAllSites = []
 
 const opts = {
     // errorEventName:'error',
@@ -63,45 +61,33 @@ const opts = {
         dateFormat:'YYYY.MM.DD HH'
 };
 const log = require('simple-node-logger').createRollingFileLogger( opts );
-
+//********************************************************************************
+// PROGRAM BEGIN
 async function run(){
-  setInterval(function() {
-  },2*1000)
-
-  fs.createReadStream('./config/site_information.txt')
-    .on('error', () => {
-      console.log('Stream file error')
-    })
-    .pipe(csv({separator:';'}))
-    .on('data', (data) => {
-      allSites.push(data)
-      // arrExportData.push(jsonExportData)
-    })
-    .on('end', async function(){
-      //console.log(allSites)
-    })
+  log.info(' =============== START PROGRAM =============== ')
+  console.log(' =============== START PROGRAM =============== ')
+  await getInitConfig()
+  delay(1000);
   
 	setInterval(async function(){
     strLogPath = logFolder + '\\' + moment(new Date()).format("YYYYMMDD");
-    
   	readFilesFromFlexy();
-    // deleteDuplicateData(strSQLTableName)
-      //checkConnection()
-    	//await writeAckOPCUA()
-  	console.log('================================================================================')
-  }, PROCESS_TIME);
+  	//console.log('============================================================')
+  }, BACKFILL_PROCESS_TIME);
 
+  //Check to Delete backup after xx days
   setInterval(async function(){
-  	deleteDataAfter10days(strSQLTableName)
-    deleteDataAfter10days(SQL_TABLE_STATUS)
+  	deleteDataAfterXXdays(strSQLTableName, BACKUP_SQL_DAY)
     deleteProcessedFolder(PROCESSED_STORE, process.env.CSV_FLEXY_PATH)
   }, REMOVE_TIME);  
 
   setInterval(async function(){
-    checkConnection()
+    //checkConnection()
   }, CHECK_CONNECT_TIME);
 
-  
+  setInterval(async function(){
+    readDataFromFlexy()
+  }, PROCESS_TIME);
 }
 run();
 
@@ -119,25 +105,12 @@ async function readFilesFromFlexy(){
 	  }
 	  let count = 0;
     //log('Start -------> ' + , strLogFile );
-    log.info('Read file at ', moment().format("YYYY-MM-DD HH:mm:ss"))
-    //Calc to Write OPC UA
-    allSites.forEach(function(site){              
-      let result = filterItems(files, site.ip)    // ['apple', 'grapes']
-      if (result.length < 8) {
-        site.isWrite = 1
-      }else{
-        site.isWrite = 0
-      }
-      // console.log('-----------------------')      // ['apple', 'grapes']
-    })
+    log.info('Read file at ---> ', moment().format("YYYY-MM-DD HH:mm:ss"))
 
-
-	  //listing all files using forEach
-	  // await files.forEach(async function (file) {
     for(let i = 0; i < files.length; i++){
       let file = files[i];
       let currentPath = inprogressFolder + '\\' + file;
-      let processedPath = directoryPath + '\\Processed';
+      
       let errPath = directoryPath + '\\Errors\\' + moment().format("YYYYMMDD-HHmmss") + '_' + file;
 
       let file_infor = fs.statSync(currentPath)
@@ -157,7 +130,7 @@ async function readFilesFromFlexy(){
         
         // Do whatever you want to do with the file
         let arrInfo = file.split("_")
-        console.log('File name: ' +arrInfo.length + ' - ' + file);
+        //console.log('File name: ' +arrInfo.length + ' - ' + file);
         log.info('Read file name: (' +arrInfo.length + ')-' + file + '- ' + fileSizeInBytes + ' bytes');
 
         if (arrInfo.length !== 7) { 
@@ -167,20 +140,14 @@ async function readFilesFromFlexy(){
           }catch(err){
             console.log(err.message)
           }
-          
-          //log.error('File name: ' + file)
 
           try{
             fs.copyFileSync(currentPath, errPath);
             fs.unlinkSync(currentPath)
           }catch(err){
-            //console.log('Move bank file err ' + err.message)
-            //log('Move bank file err ' + err.message, strLogPath + '\\log.txt');
             log.error('Move file to Error folder.' + err.message)
           }
         }else{
-
-
         	let site_id = arrInfo[0];
         	let ip = arrInfo[1];
         	let port = parseInt(arrInfo[2]);
@@ -216,8 +183,6 @@ async function readFilesFromFlexy(){
                 log.warn('Error file when stream ' + err.message);
                 log.warn('File: ' + file)
               }
-  				  	
-  				  	
   				  })
   				  .on('end', async function(){
               if (arrData.length == 0) {
@@ -228,10 +193,8 @@ async function readFilesFromFlexy(){
                     await delay(50);
                   }
                 }catch(err){
-                  //console.log('Move bank file err ' + err.message)
                   log.error('Move blank file to error folder has error' + err.message);
                 }
-                
               }else{
                 let sts = await SaveDataToSQLServer(arrData)
                 //console.log('SQL', site_id,':',sts)
@@ -242,7 +205,8 @@ async function readFilesFromFlexy(){
                   await exportToCSVFile(site_id, tagname, arrExportData)                  
                   log.info('Export CSV ' + site_id + ' ' + tagname + ' file processed successfully');
                 }
-                if (isMoveFile) {
+
+                if (isMoveFile) { //is move if data file is processed ? 1 move, 0 do not move
                   let _strPath_Date = processedPath + '\\' + moment().format("YYYY_MM_DD")
                   let strPathFile = _strPath_Date + '\\' + moment().format("YYYYMMDD-HHmmss") + '_' + file
 
@@ -251,32 +215,14 @@ async function readFilesFromFlexy(){
                     if( fs.existsSync(currentPath) ){
                       fs.copyFileSync(currentPath, strPathFile);
                       fs.unlinkSync(currentPath)
-                      await delay(50);
+                      await delay(20);
                     }
-                    
                   }catch(err){
                     //console.log('Move processed file err ' + err.message)
                     //log('Move processed file err ' + err.message, strLogPath + '\\log.txt');
                     log.error('Move processed file to Processed folder has error' + err.message);
                   }
-                  
                 }
-                
-                function filterByIP(item) {
-                  if (item.ip == ip) {
-                    // item.isWrite = 1
-                    return item
-                  }                  
-                }
-
-                let site = allSites.filter(filterByIP)
-                //console.log('isWrite OPCUA ', site[0].site_id,  site[0].isWrite)
-
-                if (site[0].isWrite) {
-                  log.info(site_id + ' write ack to Flexy ' + ackTag);
-                  sendAckToFlexy(site_id, ackTag, ip, port);
-                }
-                
               }			  	  				
   				  }) 
             
@@ -290,9 +236,9 @@ async function readFilesFromFlexy(){
 }
 
 async function sendAckToFlexy(site_id, ackTag, ip, port){
-  let OPCUAstatus = await writeAckOPCUA(site_id, ackTag, ip, port);
+  //let OPCUAstatus = await writeAckOPCUA(site_id, ackTag, ip, port);
   //console.log('OPC UA', site_id,' ', ackTag + ':',OPCUAstatus)
-  log.info(site_id + ' send ack ' + ackTag + ' to flexy by OPC UA ', OPCUAstatus);
+  //log.info(site_id + ' send ack ' + ackTag + ' to flexy by OPC UA ', OPCUAstatus);
 }
 
 async function SaveDataToSQLServer(arrData){
@@ -321,6 +267,7 @@ async function SaveDataToSQLServer(arrData){
     return 1;
 	} catch (err) {
     //console.log("SQL Error " + err)
+    log.error('SQL has error when stored data:' + err.message)
     return 0;
 	}
 }
@@ -342,13 +289,14 @@ function exportToCSVFile(site_id, tagname, data){
   const csvData = csvExporter.generateCsv(data, true);
   var dateTime = new Date();
   dateTime = moment(dateTime).format("YYYYMMDD_HHmmss");
-  let strFullPath = process.env.CSV_EXPORT_PATH + '\\Data_' + site_id + '_'  + tagname + '_' + dateTime + '.csv'
+  let strFullPath = process.env.CSV_EXPORT_PATH + '\\DT_' + site_id + '_'  + tagname + '_' + dateTime + '.csv'
   
   try{
     fs.writeFileSync(strFullPath, csvData)
     //fs.writeFileSync(strFullPathBackup, csvData)
   }catch (err){
-    console.log('Write CSV have issue ' + err.message)
+    //console.log('Write CSV have issue ' + err.message)
+    log.error('Write CSV have issue: ' + err.message)
   }
 
   //for Backup
@@ -357,21 +305,20 @@ function exportToCSVFile(site_id, tagname, data){
   let _strPath_Date = _strPath_Month + '\\' + moment().format("YYYY_MM_DD")
   let _strPath_Hour = _strPath_Date + '\\' + moment().format("YYYY_MM_DD_HH")
 
-  const folderYear = mkdirp.sync(_strPath_Year);
-  const folderMonth = mkdirp.sync(_strPath_Month);
-  const folderDate = mkdirp.sync(_strPath_Date);
-  const folderHour = mkdirp.sync(_strPath_Hour);
+  mkdirp.sync(_strPath_Year);
+  mkdirp.sync(_strPath_Month);
+  mkdirp.sync(_strPath_Date);
+  mkdirp.sync(_strPath_Hour);
   let strFullPathBackup = _strPath_Hour + '\\DT_' + site_id + '_' + tagname + '_' + dateTime + '.csv'
   try{
     fs.writeFileSync(strFullPathBackup, csvData)
   }catch (err){
     console.log('Write CSV have issue ' + err.message)
+    log.error('Write CSV ' + site_id + ' - ' + tagname + ' have error: ' + err.message)
   }
-  
 }
 
-function deleteDataAfter10days(tableName){
-  // connect to your database
+function deleteDataAfterXXdays(tableName, days){
   sql.connect(sqlConfig, function (err) {
     if (err){
       console.log(err);
@@ -379,8 +326,8 @@ function deleteDataAfter10days(tableName){
     else
     {
       var request = new sql.Request();
-      let before10days = moment().subtract(BACKUP_SQL_DAY, 'days');
-      let beforeday = new Date(before10days)
+      let beforeXXdays = moment().subtract(BACKUP_SQL_DAY, 'days');
+      let beforeday = new Date(beforeXXdays)
       //console.log('data', beforeday)
       request.input('beforeday', sql.DateTimeOffset, beforeday);
 
@@ -390,150 +337,135 @@ function deleteDataAfter10days(tableName){
     }
   })
   sql.on('error', err => {
-    console.log('SQL has issue when delete data ', err )
+    //console.log('SQL has error when delete data ', err.message )
+    log.error('SQL has error when delete data: ' + err.message)
   })
 }
 
-async function writeAckOPCUA(site_id, tagname, ip, port){
-  try {
-      const options = {
-          endpoint_must_exist: false,
-      };
-
-      const client = await OPCUAClient.create(options);
-      await client.connect('opc.tcp://' + ip +  ':' + port);
-      const session = await client.createSession({userName: process.env.OPCUA_USERNAME,password:process.env.OPCUA_PASSWORD});
-        // step 3 : browse
-      //const browseResult = await session.browse("RootFolder");
-  
-      // console.log("references of RootFolder :");
-      // for(const reference of browseResult.references) {
-      //     console.log( "   -> ", reference.browseName.toString());
-      // }
-
-      // step 4 : read a variable with readVariableValue
-      // const dataValue2 = await session.readVariableValue("ns=1;s=ack");
-      // console.log(" value = " , dataValue2.toString());
-      let strNodeID = 'ns=' + process.env.OPCUA_NODEID_NS + ';s=ack_' + tagname;
-      let nodeToWrite = {
-		    nodeId: strNodeID, //+ tagname,
-		    attributeId: AttributeIds.Value,
-		    value: {
-	        value: {
-		        dataType: DataType.Boolean, 
-		        value: true
-	        }
-		    }
-			}
-			let res = await session.write(nodeToWrite);
-			//console.log(res);
-      //await new Promise((resolve) => setTimeout(resolve, 1000000000));
-      //await monitoredItemGroup.terminate();
-      //await session.close();
-      
-      await session.close();
-      await client.disconnect();
-      if (res._value == 0) {
-      	return 1
-      	console.log("Done !");
-      }
-      //readOPCUA1();
-  } catch (err) {
-      console.log("OPC UA Error ", err.message);
-      log.error('OPC UA error when write ack to flexy ' + err.message)
-      return 0
-  }
-};
 
 function deleteProcessedFolder(days, path){
-  
   let beforeNdays = moment().subtract(days + 5, 'days');
-  let processedPath = path + '\\Processed';
+  let _processedPath = path + '\\Processed';
 
   let TempDate = beforeNdays
   for(let i = 1; i <= 5; i++ ){
     TempDate = moment(TempDate).add(1, 'd');
     let folderName = moment(TempDate).format("YYYY_MM_DD")
-    let strFolderPath = processedPath + '\\' + folderName
+    let strFolderPath = _processedPath + '\\' + folderName
 
     if (fs.existsSync(strFolderPath)) {
       rimraf.sync(strFolderPath);
       log.warn('Deleted folder ' + folderName + ' in ' + strFolderPath)
-    }
-
-    
+    } 
   }
 }
 
-function checkConnection(){
-  let arrAllSite = []
+function getInitConfig(){
   fs.createReadStream('./config/site_information.txt')
     .pipe(csv({separator:';'}))
     .on('data', (data) => {
-      arrAllSite.push(data)
+      arrAllSites.push(data) 
       // arrExportData.push(jsonExportData)
     })
     .on('end', async function(){
-      //console.log(arrAllSite)
-
-      arrAllSite.forEach(function(site){
-        readOPCUA(site.site_id, site.ip, site.port, site.username, site.password)
+      arrAllSites.forEach(function(site){
+        try{
+          site.tagnames = site.tagnames.split('*')
+          let arrTemp = []
+          for ( tn of site.tagnames) 
+          { 
+            let _temp = JSON.parse(tn)
+            arrTemp.push(_temp)
+          }
+          site.jsonTags = arrTemp 
+          console.log(site)
+        }catch(err){
+          console.log(err)
+          log.error('Convert tagname has error: ' + err.message)
+        }
       })
     })
 }
 
-async function readOPCUA(site_id, ip, port, username, password){
-  try {
-    const options = {
-        endpoint_must_exist: false,
-    };
-    const client = OPCUAClient.create(options);
+async function readDataFromFlexy(){
+  const connectionStrategy = {
+    initialDelay: 1000,
+    maxRetry: 1
+  }
+  const options = {
+      // applicationName: "MyClient",
+      connectionStrategy: connectionStrategy,
+      // securityMode: MessageSecurityMode.None,
+      // securityPolicy: SecurityPolicy.None,
+      endpoint_must_exist: false,
+  };
 
-    client.on("backoff", (retry, delay) => {
+  arrAllSites.forEach(async function(site){
+    try{
+      let _arrData = []
+      const client = OPCUAClient.create(options);
+      const endpointUrl = 'opc.tcp://' + site.ip +':'+ site.port;
+
+      client.on("backoff", (retry, delay) => {
         //console.log("Backoff ", retry, " next attempt in ", delay, "ms");
         client.disconnect();
-    });
+      });
 
-    client.on("connection_lost", () => {
-      log.warn("OPC UA Connection lost");
-      saveConnectionStatus(site_id, 0)
-      writeConnectionToCSV(site_id, 0)
-    });
+      client.on("connection_failed", () => {
+        client.disconnect();
+        //console.log("Connection failed");
+        log.error("OPC UA -" + site.site_id + 'can not connect to Flexy')
+        saveConnectionStatus(site.site_id, 0)
+        writeConnectionToCSV(site.site_id, 0)
+      });
 
-    client.on("connection_reestablished", () => {
-      //  console.log("Connection re-established");
-    });
 
-    client.on("connection_failed", () => {
-      // console.log("Connection failed");
-      // saveConnectionStatus(site_id, 0)
-    });
-    client.on("start_reconnection", () => {
-      //  console.log("Starting reconnection");
-      client.disconnect();
-    });
+      // step 1 : connect to
+      await client.connect(endpointUrl);
+      //console.log("OPC UA connected !");
+      log.info('OPC UA - '+ site.site_id + ' connected to Flexy')
+      saveConnectionStatus(site.site_id, 1)
+      writeConnectionToCSV(site.site_id, 1)
+      // Step 2 : createSession
+      const session = await client.createSession({userName: site.username,password:site.password});
+      // console.log("Session created !");
 
-    client.on("after_reconnection", (err) => {
-      //  console.log("After Reconnection event =>", err);
-    });
+      // Step 4 : read a variable with readVariableValue
+      //await site.tagnames.forEach(async function(tagname){
+      for await (tag of site.jsonTags) {
+        const dataValue2 = await session.readVariableValue("ns="+ site.namespace +";s=" + tag.name);
+        //console.log(" value = " , tagname, dataValue2.value.value);
 
-    await client.connect('opc.tcp://' + ip +  ':' + port);
-    const session = await client.createSession({userName: username,password:password});
-    
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    await session.close();
-    await client.disconnect();
-    //console.log('Connect ' + ip + ':' + port + ' successfully');
-    log.info('OPC UA connected to ' + ip + ':' + port + ' successfully');
-    writeConnectionToCSV(site_id, 1)
-    saveConnectionStatus(site_id, 1)
+        let _jsonData = {
+                  site_id : site.site_id,
+                  ip: site.ip,
+                  timestamp: new Date(),
+                  tagname: tag.sys,
+                  value: parseFloat(dataValue2.value.value),
+                  created_at: new Date(),
+                }
+        _arrData.push(_jsonData)
+      }
+      
+      //await console.log(_arrData)
+      let _isStoredSucess = await SaveDataToSQLServer(_arrData)
+      if (_isStoredSucess) {
+        log.info('SQL stored realtime data successfully')
+      }else{
+        log.error('SQL stored realtime data ERROR')
+      }
 
-  } catch (err) {
-      log.error("OPC UA connect has error: ", err.message);
-      writeConnectionToCSV(site_id, 0)
-      saveConnectionStatus(site_id, 0)
+      // close session
+      await session.close();
+      // disconnecting
+      await client.disconnect();
+      log.info('OPC UA - '+ site.site_id + ' disconnect to Flexy')
 
-  }
+    }catch(err){
+      log.error('OPC UA has error: ' + err.message)
+    }
+  })
+
 }
 
 function saveConnectionStatus(site_id, is_connect){
@@ -545,30 +477,6 @@ function saveConnectionStatus(site_id, is_connect){
                 created_at: new Date(),
               }]
     SaveDataToSQLServer(TempData)
-
-  // connect to your database
-  // sql.connect(sqlConfig, function (err) {
-  //   if (err){
-  //     console.log(err);
-  //   } 
-  //   else
-  //   {
-  //     var request = new sql.Request();
-  //     request.input('site_id', sql.VarChar, site_id);
-  //     request.input('is_connect', sql.Bit, is_connect );
-  //     request.input('created_at', sql.DateTimeOffset, new Date());
-
-  //     let strQuery = 'INSERT INTO '+ process.env.SQL_TABLE_STATUS 
-  //                  + ' (site_id, is_connect, created_at) '
-  //                  + ' VALUES (@site_id, @is_connect, @created_at)'
-  //     request.query(strQuery, function(err, recordsets) {  
-  //       if (err) console.log(err); 
-  //       //console.log(recordsets)
-  //       //sql.close()
-  //     });
-   
-  //   }
-  // })
 }
 
 async function writeConnectionToCSV(site_id, value){
@@ -588,7 +496,6 @@ async function writeConnectionToCSV(site_id, value){
     await exportToCSVFile(site_id, 'COMMUNICATION', jsonConnectExportData)
   }
 }
-
 
 function deleteDuplicateData(tableName){
   // connect to your database
@@ -615,7 +522,7 @@ function deleteDuplicateData(tableName){
                             ) row_num
                          FROM ` + tableName + `
                       WHERE  time_stamp < DATEADD(HOUR, 1, GETDATE())
-                           AND time_stamp > DATEADD(HOUR, -3, GETDATE())
+                           AND time_stamp > DATEADD(HOUR, -2, GETDATE())
                          )
                       DELETE FROM acte
                       WHERE row_num > 1;
@@ -627,6 +534,6 @@ function deleteDuplicateData(tableName){
   })
   sql.on('error', err => {
     //console.log(' )
-    log.error('SQL has error when trigger delete duplicate data ', err.message)
+    log.error('SQL has error when trigger to delete duplicate data: ', err.message)
   })
 }
