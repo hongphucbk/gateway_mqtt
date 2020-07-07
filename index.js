@@ -105,7 +105,7 @@ async function readFilesFromFlexy(){
     }
     let count = 0;
     //log('Start -------> ' + , strLogFile );
-    log.info('Read file at ---> ', moment().format("YYYY-MM-DD HH:mm:ss"))
+    log.info('Check file in Inprogress folder at ---> ', moment().format("YYYY-MM-DD HH:mm:ss"))
 
     for(let i = 0; i < files.length; i++){
       let file = files[i];
@@ -450,7 +450,7 @@ async function readDataFromFlexy(){
       //await console.log(_arrData)
       let _isStoredSucess = await SaveDataToSQLServer(_arrData)
       if (_isStoredSucess) {
-        log.info('SQL stored realtime data successfully')
+        log.info(site.site_id + ' SQL stored realtime data successfully')
       }else{
         log.error('SQL stored realtime data ERROR')
       }
