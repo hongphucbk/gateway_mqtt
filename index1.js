@@ -82,15 +82,25 @@ async function run(){
   }, REMOVE_TIME);  
 
   setInterval(async function(){
-    //checkConnection()
+    // checkConnection()
   }, CHECK_CONNECT_TIME);
 
   setInterval(async function(){
     readDataFromFlexy()
   }, PROCESS_TIME);
+
+  //2020-Jul-16: Export data from SQL Server
+  setInterval(async function() {
+    SqlExportToCSVFile(strSQLTableName)
+  }, parseInt(process.env.SQL_EXPORT_TIME)*1000  )
 }
 run();
 
+//=========================================================
+
+
+
+//=========================================================
 const filterItems = (arr, query) => {
   return arr.filter(el => el.toLowerCase().indexOf(query.toLowerCase()) !== -1)
 }
@@ -169,6 +179,7 @@ async function readFilesFromFlexy(){
                   tagname: tagname,
                   value: parseFloat(data_row.Value),
                   created_at: new Date(),
+                  backfill: 1
                 }
                 let strDatetime = dateFormat(jsonData.timestamp, "mm/dd/yyyy HH:MM");
                 let jsonExportData = {
@@ -245,16 +256,20 @@ async function SaveDataToSQLServer(arrData){
   //console.log('data = ', arrData)
   let strDt = '';
   let current = moment(new Date()).format("YYYY-MM-DD HH:mm:ss")
-
-  await arrData.forEach(function(objdt){ 	
+  let backfill = null;
+  await arrData.forEach(function(objdt){
+    if(objdt.backfill == 1){
+      backfill = 1
+    }
   	let strTime = moment(objdt.timestamp).format("YYYY-MM-DD HH:mm:ss")
-  	strDt = strDt + "('" + objdt.site_id + "', '" + objdt.tagname + "', " +  objdt.value + ", '" + strTime + "', '"+current+"' ),"
+  	strDt = strDt + "('" + objdt.site_id + "', '" + objdt.tagname + "', " 
+                  +  objdt.value + ", '" + strTime + "', '"+current + "'," +  backfill + "),"
   })
   strDt = strDt.substr(0, strDt.length - 1);
 
   //console.log('a =', strDt)
 
-  let strQuery = 'INSERT INTO ' + strSQLTableName + ' (site_id, tagname, datavalue, time_stamp, created_at) '
+  let strQuery = 'INSERT INTO ' + strSQLTableName + ' (site_id, tagname, datavalue, time_stamp, created_at, backfill) '
   						 + ' VALUES ' 
                + strDt
   try {
@@ -318,6 +333,54 @@ function exportToCSVFile(site_id, tagname, data){
   }
 }
 
+
+function exportToCSVFileNew(data){
+  const options = { 
+    fieldSeparator: ',',
+    quoteStrings: '',
+    decimalSeparator: '.',
+    showLabels: true, 
+    showTitle: false,
+    title: '[Data]',
+    useTextFile: false,
+    useBom: false,
+    useKeysAsHeaders: false,
+    headers: ['[DATA]'] //<-- Won't work with useKeysAsHeaders present!
+  };
+  const csvExporter = new ExportToCsv(options);
+  const csvData = csvExporter.generateCsv(data, true);
+  var dateTime = new Date();
+  dateTime = moment(dateTime).format("YYYYMMDD_HHmmss");
+  let strFullPath = process.env.CSV_EXPORT_PATH + '\\DT_SQL_' + dateTime + '.csv'
+  
+  try{
+    fs.writeFileSync(strFullPath, csvData)
+    //fs.writeFileSync(strFullPathBackup, csvData)
+  }catch (err){
+    //console.log('Write CSV have issue ' + err.message)
+    log.error('Write CSV have issue: ' + err.message)
+  }
+
+  //for Backup
+  let _strPath_Year = process.env.CSV_BACKUP_PATH +'\\' + moment().format("YYYY")
+  let _strPath_Month = _strPath_Year + '\\' + moment().format("YYYY_MM")
+  let _strPath_Date = _strPath_Month + '\\' + moment().format("YYYY_MM_DD")
+  let _strPath_Hour = _strPath_Date + '\\' + moment().format("YYYY_MM_DD_HH")
+
+  mkdirp.sync(_strPath_Year);
+  mkdirp.sync(_strPath_Month);
+  mkdirp.sync(_strPath_Date);
+  mkdirp.sync(_strPath_Hour);
+  let strFullPathBackup = _strPath_Hour + '\\DT_SQL_' + dateTime + '.csv'
+  try{
+    fs.writeFileSync(strFullPathBackup, csvData)
+    log.info('SQL export to CSV file successfully')
+  }catch (err){
+    //console.log('Write CSV have issue ' + err.message)
+    log.error('Write CSV_SQL have error: ' + err.message)
+  }
+}
+
 function deleteDataAfterXXdays(tableName, days){
   sql.connect(sqlConfig, function (err) {
     if (err){
@@ -331,7 +394,7 @@ function deleteDataAfterXXdays(tableName, days){
       //console.log('data', beforeday)
       request.input('beforeday', sql.DateTimeOffset, beforeday);
 
-      request.query('DELETE FROM ' + tableName + ' WHERE created_at < @beforeday', function(err, recordsets) {  
+      request.query('DELETE FROM ' + tableName + ' WHERE flag IS NULL AND created_at < @beforeday', function(err, recordsets) {  
         if (err) console.log(err); 
       });
     }
@@ -341,7 +404,6 @@ function deleteDataAfterXXdays(tableName, days){
     log.error('SQL has error when delete data: ' + err.message)
   })
 }
-
 
 function deleteProcessedFolder(days, path){
   let beforeNdays = moment().subtract(days + 5, 'days');
@@ -416,7 +478,7 @@ async function readDataFromFlexy(){
         //console.log("Connection failed");
         log.error("OPC UA -" + site.site_id + 'can not connect to Flexy')
         saveConnectionStatus(site.site_id, 0)
-        writeConnectionToCSV(site.site_id, 0)
+        //writeConnectionToCSV(site.site_id, 0)
       });
 
 
@@ -425,7 +487,7 @@ async function readDataFromFlexy(){
       //console.log("OPC UA connected !");
       log.info('OPC UA - '+ site.site_id + ' connected to Flexy')
       saveConnectionStatus(site.site_id, 1)
-      writeConnectionToCSV(site.site_id, 1)
+      //writeConnectionToCSV(site.site_id, 1)
       // Step 2 : createSession
       const session = await client.createSession({userName: site.username,password:site.password});
       // console.log("Session created !");
@@ -536,4 +598,75 @@ function deleteDuplicateData(tableName){
     //console.log(' )
     log.error('SQL has error when trigger to delete duplicate data: ', err.message)
   })
+}
+
+async function SqlExportToCSVFile(tblName){
+  let arrExportData = [
+                        {
+                          TimeStamp: 'TimeStamp',
+                          Tagname: 'Tagname',
+                          Value: 'Value',
+                        }
+                      ]
+  let sql_id = 1;
+  sql.connect(sqlConfig, async function (err) {
+    if (err){
+      log.error('SQL has error when connect: ', err.message);
+    } 
+    else
+    {
+      var request = new sql.Request();
+      let beforeXXtime = moment().add(parseInt(process.env.LOCAL_TIME), 'hours').subtract(30, 'seconds');
+      //let beforeXXtime = moment().add(parseInt(process.env.LOCAL_TIME), 'hours').subtract(2, 'minutes');
+      let beforeday = new Date(beforeXXtime)
+      //console.log('data', beforeday)
+      request.input('beforeTime', sql.DateTime, beforeday);
+
+      request.query('SELECT TOP ' + process.env.SQL_LINE + '  * FROM ' + tblName + ' WHERE flag IS NULL AND created_at < @beforeTime',async function(err, result) {  
+        if (err) log.error('SQL has error when query ', err.message); 
+        //console.log('aaa = ', result.recordsets[0].length)
+        if (result && result.recordsets[0].length > 0) {
+          result.recordsets[0].forEach(function(row){
+            let strDatetime = dateFormat(moment(row.time_stamp).subtract( parseInt(process.env.LOCAL_TIME),'hours'), "mm/dd/yyyy HH:MM");
+            // console.log('row.time_stamp = ', row.time_stamp)
+            // console.log('time = ', strDatetime)
+            let jsonExportData = {
+              TimeStamp: strDatetime,
+              Tagname: row.site_id + ':METTUBE.'+ row.tagname,
+              Value: row.datavalue.toFixed(1),
+            }
+            arrExportData.push(jsonExportData)
+
+            sql_id = row.id
+          })
+          log.info('SQL Exported to ID ', sql_id)
+          await exportToCSVFileNew(arrExportData)
+          SQL_Update_Data(tblName, sql_id)
+        }
+        
+
+      });
+    }
+  })
+  sql.on('error', err => {
+    //console.log('SQL has error when delete data ', err.message )
+    log.error('SQL has error when delete data: ' + err.message)
+  })
+}
+
+
+async function SQL_Update_Data(tblName, sql_id){
+  //console.log(sql_id)
+  let strQuery = 'UPDATE ' + tblName + ' SET flag = 1 WHERE flag IS NULL AND id <= @sql_id'
+  try {
+    let pool = await sql.connect(sqlConfig)
+    let result1 = await pool.request()
+                            .input('sql_id', sql.Int, sql_id)
+                            .query(strQuery)
+            
+  } catch (err) {
+    //console.log("SQL export data " + err)
+    log.error('SQL export data:' + err.message)
+    //return 0;
+  }
 }
