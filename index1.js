@@ -41,6 +41,7 @@ const BACKFILL_PROCESS_TIME = parseInt(process.env.BACKFILL_PROCESS_TIME)*1000;
 
 const REMOVE_TIME = parseInt(process.env.REMOVE_TIME)*1000;
 const CHECK_CONNECT_TIME = parseInt(process.env.CHECK_CONNECT_TIME)*1000;
+const SQL_EXPORT_TIME = parseInt(process.env.SQL_EXPORT_TIME)*1000
 
 const BACKUP_SQL_DAY = parseInt(process.env.BACKUP_SQL_DAY);
 const PROCESSED_STORE = parseInt(process.env.PROCESSED_STORE);
@@ -92,7 +93,7 @@ async function run(){
   //2020-Jul-16: Export data from SQL Server
   setInterval(async function() {
     SqlExportToCSVFile(strSQLTableName)
-  }, parseInt(process.env.SQL_EXPORT_TIME)*1000  )
+  }, SQL_EXPORT_TIME )
 }
 run();
 
@@ -650,7 +651,7 @@ async function SqlExportToCSVFile(tblName){
   })
   sql.on('error', err => {
     //console.log('SQL has error when delete data ', err.message )
-    log.error('SQL has error when delete data: ' + err.message)
+    log.error('SQL has error when export data: ' + err.message)
   })
 }
 
