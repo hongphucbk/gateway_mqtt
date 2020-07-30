@@ -82,9 +82,9 @@ async function run(){
     deleteProcessedFolder(PROCESSED_STORE, process.env.CSV_FLEXY_PATH)
   }, REMOVE_TIME);  
 
-  setInterval(async function(){
-    // checkConnection()
-  }, CHECK_CONNECT_TIME);
+  // setInterval(async function(){
+  //   // checkConnection()
+  // }, CHECK_CONNECT_TIME);
 
   setInterval(async function(){
     readDataFromFlexy()
@@ -489,7 +489,7 @@ async function readDataFromFlexy(){
       // step 1 : connect to
       await client.connect(endpointUrl);
       //console.log("OPC UA connected !");
-      log.info('OPC UA - '+ site.site_id + ' connected to Flexy')
+      log.info('OPC UA - '+ site.site_id + ' connected to Flexy --> at ' + now())
       saveConnectionStatus(site.site_id, 1)
       //writeConnectionToCSV(site.site_id, 1)
       // Step 2 : createSession
