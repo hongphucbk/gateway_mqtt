@@ -489,7 +489,7 @@ async function readDataFromFlexy(){
       // step 1 : connect to
       await client.connect(endpointUrl);
       //console.log("OPC UA connected !");
-      log.info('OPC UA - '+ site.site_id + ' connected to Flexy --> at ' + now())
+      log.info('OPC UA - '+ site.site_id + ' connected to Flexy --> at ' + moment().format("YYYY-MM-DD HH:mm:ss"))
       saveConnectionStatus(site.site_id, 1)
       //writeConnectionToCSV(site.site_id, 1)
       // Step 2 : createSession
