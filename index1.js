@@ -37,13 +37,13 @@ const strSQLTableName = process.env.SQL_TABLE_NAME;
 const isMoveFile = parseInt(process.env.IS_MOVE_FILE)
 const PROCESS_TIME = parseInt(process.env.PROCESS_TIME)*1000;
 const BACKFILL_PROCESS_TIME = parseInt(process.env.BACKFILL_PROCESS_TIME)*1000;
-
+//const BACKUP_SQL_TIME = parseInt(process.env.BACKUP_SQL_TIME)*86400000;
 
 const REMOVE_TIME = parseInt(process.env.REMOVE_TIME)*1000;
 const CHECK_CONNECT_TIME = parseInt(process.env.CHECK_CONNECT_TIME)*1000;
 const SQL_EXPORT_TIME = parseInt(process.env.SQL_EXPORT_TIME)*1000
 
-const BACKUP_SQL_DAY = parseInt(process.env.BACKUP_SQL_DAY);
+const DELETE_SQL_DAY = parseInt(process.env.DELETE_SQL_DAY);
 const PROCESSED_STORE = parseInt(process.env.PROCESSED_STORE);
 
 const directoryPath = process.env.CSV_FLEXY_PATH;
@@ -66,7 +66,7 @@ const log = require('simple-node-logger').createRollingFileLogger( opts );
 // PROGRAM BEGIN
 async function run(){
   log.info(' =============== START PROGRAM =============== ')
-  console.log(' =============== START PROGRAM =============== ')
+  //console.log(' =============== START PROGRAM =============== ')
   await getInitConfig()
   delay(1000);
   
@@ -78,13 +78,9 @@ async function run(){
 
   //Check to Delete backup after xx days
   setInterval(async function(){
-  	deleteDataAfterXXdays(strSQLTableName, BACKUP_SQL_DAY)
+  	deleteDataAfterXXdays(strSQLTableName, DELETE_SQL_DAY)
     deleteProcessedFolder(PROCESSED_STORE, process.env.CSV_FLEXY_PATH)
-  }, REMOVE_TIME);  
-
-  // setInterval(async function(){
-  //   // checkConnection()
-  // }, CHECK_CONNECT_TIME);
+  }, REMOVE_TIME);
 
   setInterval(async function(){
     readDataFromFlexy()
@@ -94,6 +90,7 @@ async function run(){
   setInterval(async function() {
     SqlExportToCSVFile(strSQLTableName)
   }, SQL_EXPORT_TIME )
+
 }
 run();
 
@@ -393,7 +390,7 @@ function deleteDataAfterXXdays(tableName, days){
     else
     {
       var request = new sql.Request();
-      let beforeXXdays = moment().subtract(BACKUP_SQL_DAY, 'days');
+      let beforeXXdays = moment().subtract(days, 'days');
       let beforeday = new Date(beforeXXdays)
       //console.log('data', beforeday)
       request.input('beforeday', sql.DateTimeOffset, beforeday);
