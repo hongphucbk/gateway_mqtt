@@ -362,24 +362,27 @@ function exportToCSVFileNew(data){
     log.error('Write CSV have issue: ' + err.message)
   }
 
-  //for Backup
-  let _strPath_Year = process.env.CSV_BACKUP_PATH +'\\' + moment().format("YYYY")
-  let _strPath_Month = _strPath_Year + '\\' + moment().format("YYYY_MM")
-  let _strPath_Date = _strPath_Month + '\\' + moment().format("YYYY_MM_DD")
-  let _strPath_Hour = _strPath_Date + '\\' + moment().format("YYYY_MM_DD_HH")
+  if (parseInt(process.env.IS_BACKUP_CSV) > 0) {
+    //for Backup
+    let _strPath_Year = process.env.CSV_BACKUP_PATH +'\\' + moment().format("YYYY")
+    let _strPath_Month = _strPath_Year + '\\' + moment().format("YYYY_MM")
+    let _strPath_Date = _strPath_Month + '\\' + moment().format("YYYY_MM_DD")
+    let _strPath_Hour = _strPath_Date + '\\' + moment().format("YYYY_MM_DD_HH")
 
-  mkdirp.sync(_strPath_Year);
-  mkdirp.sync(_strPath_Month);
-  mkdirp.sync(_strPath_Date);
-  mkdirp.sync(_strPath_Hour);
-  let strFullPathBackup = _strPath_Hour + '\\DT_SQL_' + dateTime + '.csv'
-  try{
-    fs.writeFileSync(strFullPathBackup, csvData)
-    log.info('SQL export to CSV file successfully')
-  }catch (err){
-    //console.log('Write CSV have issue ' + err.message)
-    log.error('Write CSV_SQL have error: ' + err.message)
+    mkdirp.sync(_strPath_Year);
+    mkdirp.sync(_strPath_Month);
+    mkdirp.sync(_strPath_Date);
+    mkdirp.sync(_strPath_Hour);
+    let strFullPathBackup = _strPath_Hour + '\\DT_SQL_' + dateTime + '.csv'
+    try{
+      fs.writeFileSync(strFullPathBackup, csvData)
+      log.info('SQL export to Backup CSV file successfully.')
+    }catch (err){
+      //console.log('Write CSV have issue ' + err.message)
+      log.error('SQL export to backup CSV have error: ' + err.message)
+    }
   }
+  
 }
 
 function deleteDataAfterXXdays(tableName, days){

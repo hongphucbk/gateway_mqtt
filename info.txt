@@ -35,7 +35,7 @@ MY999952;127.0.0.1;4840;user1;password1
 VN110233;127.0.0.1;4841;user1;password1
 
 
-MY999952;10.137.16.1;4840;adm;adm;4;0;{"name":"Temperature", "sys":"TT-GN21"}*{"name":"Pressure", "sys":"PT-GN21"}*{"name":"Flow", "sys":"FT-GN21-RAW"}*{"name":"CompensatedFlow", "sys":"FT-GN21-COMP"}*{"name":"Tier1", "sys":"FQ-GN21"}*{"name":"Tier1", "sys":"FQ-GN22"}
+MY999952;101.127.16.1;4840;abcdm;abcdmx;4;0;{"name":"Temperature", "sys":"TT-GN21"}*{"name":"Pressure", "sys":"PT-GN21"}*{"name":"Flow", "sys":"FT-GN21-RAW"}*{"name":"CompensatedFlow", "sys":"FT-GN21-COMP"}*{"name":"Tier1", "sys":"FQ-GN21"}*{"name":"Tier1", "sys":"FQ-GN22"}
 
 
 //TIME
@@ -52,3 +52,6 @@ LOCAL_TIME=7
 //BACKUP
 PROCESSED_STORE=2 		//Days
 BACKUP_SQL_DAY=1		//Days
+
+
+IS_BACKUP_CSV=1
