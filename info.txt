@@ -55,3 +55,7 @@ BACKUP_SQL_DAY=1		//Days
 
 
 IS_BACKUP_CSV=1
+DELETE_SQL_DAY=10	
+
+//DATACONFIG
+DATABASE_PATH=database\\prd_config.db

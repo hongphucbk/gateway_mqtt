@@ -13,6 +13,7 @@ const ExportToCsv = require('export-to-csv').ExportToCsv;
 const mkdirp = require('mkdirp');
 const rimraf = require("rimraf");
 //const log = require('log-to-file');
+var db = require("./models/database.js")
 
 const  { 
   OPCUAClient,
@@ -54,6 +55,7 @@ mkdirp.sync(logFolder);
 //********************************************************************************
 // Global variable
 let arrAllSites = []
+arrAllSites.tagnames = []
 
 const opts = {
     // errorEventName:'error',
@@ -67,8 +69,9 @@ const log = require('simple-node-logger').createRollingFileLogger( opts );
 async function run(){
   log.info(' =============== START PROGRAM =============== ')
   //console.log(' =============== START PROGRAM =============== ')
-  await getInitConfig()
-  delay(1000);
+  //await getInitConfig()
+  await getInitConfig_2() 
+  delay(2000);
   
 	setInterval(async function(){
     strLogPath = logFolder + '\\' + moment(new Date()).format("YYYYMMDD");
@@ -450,6 +453,42 @@ function getInitConfig(){
     })
 }
 
+function getInitConfig_2(){
+  try{
+    let sql = "SELECT * FROM site_config";
+    var params = []
+    db.all(sql, params, (err, rows) => {
+      if (err) {
+        log.error('SQLite error:', err.message )
+      }
+      arrAllSites = rows;
+      //console.log(arrAllSites)
+
+      arrAllSites.forEach(function(site){
+        site.tagnames = []
+        site.jsonTags = []
+        //console.log(site)
+        let sql1 = "SELECT * FROM tag_config where site_id = ?";
+        let params1 = [site.id]
+        db.all(sql1, params1, (err, rows1) => {
+          if (err) {
+            log.error('SQLite error:', err.message )
+          }
+          
+          for ( row of rows1) 
+          { 
+            site.tagnames.push(row)
+            site.jsonTags.push(row)
+          }
+          log.info('Site', site )
+        });
+      })
+    });
+  }catch(err){
+    log.error('Initial error:', err.message )
+  }
+}
+
 async function readDataFromFlexy(){
   const connectionStrategy = {
     initialDelay: 1000,
@@ -497,17 +536,20 @@ async function readDataFromFlexy(){
       //await site.tagnames.forEach(async function(tagname){
       for await (tag of site.jsonTags) {
         const dataValue2 = await session.readVariableValue("ns="+ site.namespace +";s=" + tag.name);
-        //console.log(" value = " , tagname, dataValue2.value.value);
-
-        let _jsonData = {
-                  site_id : site.site_id,
-                  ip: site.ip,
-                  timestamp: new Date(),
-                  tagname: tag.sys,
-                  value: parseFloat(dataValue2.value.value),
-                  created_at: new Date(),
-                }
-        _arrData.push(_jsonData)
+        //console.log("OPC UA: Tagname = " , site.site_id, tag.name, dataValue2.value.value);
+        let _value = parseFloat(dataValue2.value.value);
+        if (_value >= tag.min && _value <= tag.max) {
+          let _jsonData = {
+                site_id : site.site_id,
+                ip: site.ip,
+                timestamp: new Date(),
+                tagname: tag.sys,
+                value: _value,
+                created_at: new Date(),
+              }
+          _arrData.push(_jsonData)
+        }
+        
       }
       
       //await console.log(_arrData)
@@ -584,8 +626,8 @@ function deleteDuplicateData(tableName){
                                     datavalue
                             ) row_num
                          FROM ` + tableName + `
-                      WHERE  time_stamp < DATEADD(HOUR, 1, GETDATE())
-                           AND time_stamp > DATEADD(HOUR, -2, GETDATE())
+                      WHERE  created_at < DATEADD(HOUR, 1, GETDATE())
+                           AND created_at > DATEADD(HOUR, -2, GETDATE())
                          )
                       DELETE FROM acte
                       WHERE row_num > 1;

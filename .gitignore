@@ -3,3 +3,4 @@ node_modules
 # index1.js
 config/site_information.txt
 copyfile.js
+database/prd_config.db
