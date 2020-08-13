@@ -11,6 +11,13 @@ const sqlConfig = {
   port: parseInt(process.env.SQL_SERVER_PORT),
   user: process.env.SQL_SERVER_USERNAME,
   server: process.env.SQL_SERVER_SERVER,
+  pool: {
+    max: 10,
+    min: 0,
+    idleTimeoutMillis: 5000,
+  },
+  connectionTimeout:2000,
+
   //driver:'tedious'
 }
 

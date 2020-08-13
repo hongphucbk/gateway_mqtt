@@ -22,9 +22,11 @@
     "node-opcua": "^2.6.7",
     "node-opcua-client": "^2.6.7",
     "node-windows": "^1.0.0-beta.1",
+    "ping": "^0.2.3",
     "rimraf": "^3.0.2",
     "simple-node-logger": "^18.12.24",
     "sqlite3": "^5.0.0",
-    "strip-bom-stream": "^4.0.0"
+    "strip-bom-stream": "^4.0.0",
+    "telnet-client": "^1.4.5"
   }
 }
