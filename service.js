@@ -5,8 +5,8 @@ var log = new EventLogger('Aucontech-Gateway');
 
 // Create a new service object
 var svc = new Service({
-  name:'AucontechGatewayBF',
-  description: 'The gateway read data from Flexy by Aucontech with backfill',
+  name:'AucontechGatewayMQTT',
+  description: 'The gateway read data from Flexy by Aucontech with MQTT',
   //script: 'E:\\Aucontech\\02. Project\\02. Linde Malaysia\\Project\\GatewayIOT_Demo\\index1.js',
   script: require('path').join(__dirname,'index.js')
 });

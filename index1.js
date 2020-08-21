@@ -48,10 +48,9 @@ let SqlExportToCSVFile = require('./fnc/sqlExportToCSVFile.js')
 let deleteProcessedFolder = require('./fnc/deleteProcessedFolder.js')
 let deleteDataAfterXXdays = require('./fnc/deleteDataAfterXXdays.js')
 let readDataByMQTT = require('./fnc/readDataByMQTT.js')
+let readDataByMQTT_Broker = require('./fnc/readDataByMQTT_Broker.js')
+
 let saveConnectionStatus = require('./fnc/saveConnectionStatus.js')
-
-
-
 //********************************************************************************
 // Global variable
 let arrAllSites = []
@@ -79,11 +78,12 @@ async function run(){
     SqlExportToCSVFile(strSQLTableName)
   }, SQL_EXPORT_TIME )
 
-  readDataByMQTT()
+  //readDataByMQTT()
+  readDataByMQTT_Broker()
   
   setInterval(async function() {
     checkConnectionPing()
-  }, 10000 )  
+  }, 30000 )  
 }
 run();
 

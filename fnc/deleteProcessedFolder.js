@@ -3,6 +3,7 @@ const sql = require("mssql");
 const sqlConfig = require('../config/sql.js')
 const log = require('./log.js')
 const fs = require('fs');
+const rimraf = require("rimraf");
 
 module.exports = async function(days, path){
   let _beforeNdays = moment().subtract(days + 5, 'days');
