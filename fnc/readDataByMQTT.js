@@ -15,7 +15,7 @@ module.exports = async function(days, path){
   let client  = mqtt.connect(process.env.MQTT_URL, mqttOption)
   client.on('connect', function () {
     //console.log('Connect MQTT', ...args)
-    client.subscribe('Flexy/Data1', function (err) {
+    client.subscribe(process.env.MQTT_TOPIC, function (err) {
       if (!err) {
         log.info('MQTT is connected to Broker successfully')
         //client.publish('data', 'Hello mqtt')
