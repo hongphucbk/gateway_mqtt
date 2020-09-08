@@ -83,15 +83,11 @@ async function run(){
   
   setInterval(async function() {
     checkConnectionPing()
-  }, 30000 )  
+  }, 5000 )  
 }
 run();
 
 //=========================================================
-const filterItems = (arr, query) => {
-  return arr.filter(el => el.toLowerCase().indexOf(query.toLowerCase()) !== -1)
-}
-
 function getInitConfig_2(){
   try{
     let sql = "SELECT * FROM site_config";
@@ -128,6 +124,17 @@ function getInitConfig_2(){
   }
 }
 
+let count = 0;
+let file
+let currentPath
+let errPath
+let file_infor
+let fileSizeInBytes
+let tag_header
+let site_id 
+let tagname
+let jsonData
+let arrData = []
 async function readFilesFromFlexy(){
 	//passsing directoryPath and callback function
 	await fs.readdir(inprogressFolder, async function (err, files) {
@@ -135,23 +142,21 @@ async function readFilesFromFlexy(){
 	  if (err) {
 	    return console.log('Unable to scan directory: ' + err);
 	  }
-	  let count = 0;
+	  count = 0;
     //log('Start -------> ' + , strLogFile );
     log.info('Check file in Inprogress folder at ---> ', moment().format("YYYY-MM-DD HH:mm:ss"))
 
     for(let i = 0; i < files.length; i++){
-      let file = files[i];
-      let currentPath = inprogressFolder + '\\' + file;
-      
-      let errPath = directoryPath + '\\Errors\\' + moment().format("YYYYMMDD-HHmmss") + '_' + file;
+      file = files[i];
+      currentPath = inprogressFolder + '\\' + file;
+      errPath = directoryPath + '\\Errors\\' + moment().format("YYYYMMDD-HHmmss") + '_' + file;
 
-      let file_infor = fs.statSync(currentPath)
-      let fileSizeInBytes = file_infor["size"]
-      //console.log(fileSizeInBytes, typeof(fileSizeInBytes))
+      file_infor = fs.statSync(currentPath)
+      fileSizeInBytes = file_infor["size"]
 
 	  	count = count +1;
 	  	if (count < process.env.PROCESS_FILE && fileSizeInBytes > 0) {
-  	  	let arrData = []
+  	  	arrData = []
   	  	let arrExportData = [
           {
             TimeStamp: 'TimeStamp',
@@ -177,9 +182,9 @@ async function readFilesFromFlexy(){
             log.error('Move file to Error folder ' + err.message)
           }
         }else{
-          let tag_header = arrInfo[0];
-        	let site_id = arrInfo[1];
-        	let tagname = arrInfo[2];
+          tag_header = arrInfo[0];
+        	site_id = arrInfo[1];
+        	tagname = arrInfo[2];
 
         	fs.createReadStream(currentPath)
             .on('error', (err) => {
@@ -188,7 +193,7 @@ async function readFilesFromFlexy(){
   				  .pipe(csv({separator:';'}))
   				  .on('data', (data_row) => {
               try{
-                let jsonData = {
+                jsonData = {
                   tag_header: tag_header,
                   site_id : site_id,
                   timestamp: moment(data_row.TimeStr, "DD/MM/YYYY HH:mm:ss", true), //(data_row.TimeStr),
@@ -217,7 +222,7 @@ async function readFilesFromFlexy(){
                   log.error('Move blank file to error folder has error' + err.message);
                 }
               }else{
-                let sts = await SaveDataToSQLServer(arrData)
+                await SaveDataToSQLServer(arrData)
                 //console.log('SQL', site_id,':',sts)
                 log.info('Backfill - SQL stored ' + site_id + '- ' + tagname);
                 await delay(20);
@@ -248,16 +253,14 @@ async function readFilesFromFlexy(){
 }
 
 
-
-
 async function checkConnectionPing(){
   arrAllSites.forEach(function(site){
     ping.sys.probe(site.ip, function(isAlive){
       if (isAlive) {
-        saveConnectionStatus(site.site_id, site.site_id, 1)
-        log.info('PING - '+ site.site_id + ' - IP: ' + site.ip + ' successfully')
+        saveConnectionStatus(site.tag_header, site.site_id, 1)
+        //log.info('PING - '+ site.site_id + ' - IP: ' + site.ip + ' successfully')
       }else{
-        saveConnectionStatus(site.site_id, site.site_id, 0)
+        saveConnectionStatus(site.tag_header, site.site_id, 0)
         log.info('PING - '+ site.site_id + ' - IP: ' + site.ip + ' failed')
       }
     });

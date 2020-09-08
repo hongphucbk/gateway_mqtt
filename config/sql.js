@@ -12,11 +12,11 @@ const sqlConfig = {
   user: process.env.SQL_SERVER_USERNAME,
   server: process.env.SQL_SERVER_SERVER,
   pool: {
-    max: 10,
+    max: 20,
     min: 0,
     idleTimeoutMillis: 5000,
   },
-  connectionTimeout:2000,
+  connectionTimeout:5000,
 
   //driver:'tedious'
 }

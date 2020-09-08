@@ -6,10 +6,22 @@ const dateFormat = require('dateformat');
 const fs = require('fs');
 const csv = require('csv-parser');
 
+let strQuery
+let pool
 module.exports = async function(tblName, sql_id){
   let strQuery = 'UPDATE ' + tblName + ' SET flag = 1 WHERE flag IS NULL AND id <= @sql_id'
   try {
-    let pool = await sql.connect(sqlConfig)
+    if (!pool) {
+      pool = await sql.connect(sqlConfig)      
+    }else{
+      if(!pool._connected){
+        pool = await sql.connect(sqlConfig)
+        console.log('---Hihi 3----------------> check connect')
+      }else{
+        //console.log('---Hihi 2---------------->')
+      }
+
+    }
     let result1 = await pool.request()
                             .input('sql_id', sql.Int, sql_id)
                             .query(strQuery)
@@ -19,7 +31,7 @@ module.exports = async function(tblName, sql_id){
             
   } catch (err) {
     //console.log("SQL export data " + err)
-    log.error('SQL export data:' + err.message)
+    log.error('SQL update data:' + err.message)
     //return 0;
   }
 

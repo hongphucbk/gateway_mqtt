@@ -6,15 +6,18 @@ const fs = require('fs');
 var mqtt = require('mqtt')
 
 let SaveDataToSQLServer = require('./saveDataToSQLServer.js')
+let TempData;
+let now;
 
 module.exports = async function(tag_header, site_id, is_connect){
-  let TempData = [{
+	now = new Date();
+	TempData = [{
               tag_header: tag_header,
               site_id : site_id,
-              timestamp: new Date(), //(data_row.TimeStr),
+              timestamp: now, //(data_row.TimeStr),
               tagname: 'COMMUNICATION',
               value: parseFloat(is_connect),
-              created_at: new Date(),
+              created_at: now,
             }]
   SaveDataToSQLServer(TempData)
 }

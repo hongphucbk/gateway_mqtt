@@ -11,25 +11,29 @@ let arrAllData = []
 module.exports = async function(days, path){
   var mosca = require('mosca');
   var settings = {
-    port: 1883,
+    port: 1888,
     //backend: ascoltatore
   };
 
   var server = new mosca.Server(settings);
-
   server.on('clientConnected', function(client) {
-      console.log('Client connected', client.id);
+      log.info('Client connected ', client.id);
   });
   // fired when a message is received
+
+  let _arrData = []
+  let json_message;
+  let _jsonData;
+
   server.on('published', function(packet, client) {
     if(packet.topic == process.env.MQTT_TOPIC) 
     {
       try{
-        let json_message = JSON.parse(packet.payload.toString())
+        json_message = JSON.parse(packet.payload.toString())
         //console.log(json_message)
-        let _arrData = []
+        _arrData = []
         json_message.data.forEach(function(tag){
-          let _jsonData = {
+          _jsonData = {
             tag_header : json_message.tag_header,
             site_id : json_message.site_id,
             timestamp: moment(json_message.datetime, "YYYY-MM-DD HH:mm:ss", true), //(data_row.TimeStr),
@@ -42,18 +46,21 @@ module.exports = async function(days, path){
         })
         //await SaveDataToSQLServer(_arrData)
       }catch(err){
+        console.log(err)
         log.error('MQTT error ' + err.message)
       }
   
     }
   });
 
+  let _end;
+  let _arrTemp;
   setInterval(async function() {
     RECORD_SAVE_SQL = parseInt(process.env.RECORD_SAVE_SQL)
-    let _end = arrAllData.length > RECORD_SAVE_SQL ? RECORD_SAVE_SQL : arrAllData.length;
+    _end = arrAllData.length > RECORD_SAVE_SQL ? RECORD_SAVE_SQL : arrAllData.length;
     //console.log('start', arrAllData.length)
     if(_end > 0){
-      let _arrTemp = arrAllData.slice(0, _end);
+      _arrTemp = arrAllData.slice(0, _end);
       for (var i = 0; i <= _end; i++) {
         arrAllData.pop()
       }

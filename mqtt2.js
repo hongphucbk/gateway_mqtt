@@ -3,7 +3,7 @@ require('dotenv').config()
 var mqtt = require('mqtt')
 var client = mqtt.connect(process.env.MQTT_URL)
 
-var client1 = mqtt.connect('mqtt://127.0.0.1:1884')
+var client1 = mqtt.connect('mqtt://127.0.0.1:1888')
 
 client.on('connect', function () {
   console.log('Client connected MQTT')

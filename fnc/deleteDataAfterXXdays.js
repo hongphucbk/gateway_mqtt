@@ -4,6 +4,8 @@ const sqlConfig = require('../config/sql.js')
 const log = require('./log.js')
 const fs = require('fs');
 
+let beforeXXdays
+let beforeday
 module.exports = async function(tableName, days){
   sql.connect(sqlConfig, function (err) {
     if (err){
@@ -11,9 +13,9 @@ module.exports = async function(tableName, days){
     } 
     else
     {
-      var request = new sql.Request();
-      let beforeXXdays = moment().subtract(days, 'days');
-      let beforeday = new Date(beforeXXdays)
+      let request = new sql.Request();
+      beforeXXdays = moment().subtract(days, 'days');
+      beforeday = new Date(beforeXXdays)
       //console.log('data', beforeday)
       request.input('beforeday', sql.DateTimeOffset, beforeday);
 
